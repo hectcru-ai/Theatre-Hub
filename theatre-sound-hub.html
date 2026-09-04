@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sound Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Caveat:wght@500;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12141a;
+    --panel: #1a1d25;
+    --panel-raised: #23262f;
+    --panel-line: #333844;
+    --text: #e9e6de;
+    --text-dim: #9195a3;
+    --text-faint: #656a78;
+    --gold: #c9973f;
+    --gold-dim: #8a6c34;
+    --go: #52a05f;
+    --standby: #c1443b;
+    --tape: #e8dec0;
+    --tape-shadow: #a89a6f;
+    --focus: #d9b25f;
+    --radius: 6px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Work Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(201,151,63,0.05), transparent 45%),
+      radial-gradient(circle at 90% 80%, rgba(82,160,95,0.04), transparent 50%);
+  }
+  a{ color: var(--gold); }
+  ::selection{ background: var(--gold-dim); color: #fff; }
+  *:focus-visible{ outline: 2px solid var(--focus); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- App shell ---------- */
+  .app{
+    display: grid;
+    grid-template-columns: 216px 1fr;
+    min-height: 100vh;
+  }
+  @media (max-width: 780px){
+    .app{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Sidebar / console rail ---------- */
+  .rail{
+    background: linear-gradient(180deg, #15171d, #101217);
+    border-right: 1px solid var(--panel-line);
+    padding: 20px 14px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  @media (max-width: 780px){
+    .rail{ border-right:none; border-bottom: 1px solid var(--panel-line); flex-direction: row; align-items: center; overflow-x: auto; padding: 14px; }
+  }
+  .wordmark{
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .wordmark small{
+    display:block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: var(--text-faint);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  @media (max-width: 780px){ .wordmark{ flex: 0 0 auto; margin-right: 6px; } .wordmark small{ display:none; } }
+
+  .strip-list{ display:flex; flex-direction:column; gap:10px; }
+  @media (max-width: 780px){ .strip-list{ flex-direction:row; } }
+
+  .strip{
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: var(--radius);
+    padding: 10px 10px 12px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    transition: transform 0.15s ease, background 0.15s ease;
+    min-width: 150px;
+  }
+  .strip:hover{ background: var(--panel-raised); }
+  .strip.active{
+    background: var(--panel-raised);
+    transform: translateX(4px);
+    box-shadow: inset 3px 0 0 var(--show-color, var(--gold));
+  }
+  @media (max-width: 780px){
+    .strip.active{ transform: translateY(2px); box-shadow: inset 0 3px 0 var(--show-color, var(--gold)); }
+  }
+  .strip-edge{
+    height: 4px;
+    width: 34px;
+    border-radius: 3px;
+    background: var(--show-color, var(--gold));
+    margin-bottom: 8px;
+  }
+  .strip-tape{
+    display: inline-block;
+    background: var(--tape);
+    color: #2b2510;
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1;
+    padding: 3px 8px 4px;
+    border-radius: 2px;
+    transform: rotate(-1.2deg);
+    box-shadow: 0 1px 0 var(--tape-shadow);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .strip-meta{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    margin-top: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .add-show-btn{
+    background: none;
+    border: 1px dashed var(--panel-line);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.82rem;
+    padding: 9px 10px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .add-show-btn:hover{ border-color: var(--gold-dim); color: var(--text); }
+  @media (max-width: 780px){ .add-show-btn{ white-space: nowrap; min-width: 110px; } }
+
+  .rail-footer{
+    margin-top: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+  @media (max-width: 780px){ .rail-footer{ display:none; } }
+
+  /* ---------- Main ---------- */
+  .main{ padding: 22px 28px 60px; max-width: 980px; }
+  @media (max-width: 600px){ .main{ padding: 18px 16px 48px; } }
+
+  .show-header{ margin-bottom: 6px; }
+  .show-title{
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0;
+    line-height: 1.05;
+  }
+  .show-sub{
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    margin-top: 4px;
+  }
+  .show-sub span{ color: var(--text-faint); margin: 0 6px; }
+
+  .waveline{
+    height: 14px;
+    margin: 14px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .waveline i{
+    display:block;
+    width: 2px;
+    background: var(--gold-dim);
+    border-radius: 1px;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity: 0.35; }
+    50%{ opacity: 0.9; }
+  }
+
+  .tabs{
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid var(--panel-line);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .tab-btn{
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover{ color: var(--text); }
+  .tab-btn.active{ color: var(--gold); border-bottom-color: var(--gold); }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: var(--radius);
+    padding: 18px 18px 20px;
+  }
+  .panel + .panel{ margin-top: 16px; }
+
+  .panel-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .panel-head h3{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+  .panel-head .hint{ font-size: 0.75rem; color: var(--text-faint); }
+
+  .btn{
+    background: var(--panel-raised);
+    border: 1px solid var(--panel-line);
+    color: var(--text);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .btn:hover{ border-color: var(--gold-dim); }
+  .btn-gold{ background: var(--gold); border-color: var(--gold); color: #1a1508; font-weight: 600; }
+  .btn-gold:hover{ background: #d9a94a; }
+  .btn-ghost{ background: none; border: none; color: var(--text-faint); }
+  .btn-ghost:hover{ color: var(--standby); }
+  .btn-sm{ padding: 4px 9px; font-size: 0.72rem; }
+
+  table{ width: 100%; border-collapse: collapse; }
+  th{
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 0 8px 8px;
+    border-bottom: 1px solid var(--panel-line);
+  }
+  td{
+    padding: 7px 8px;
+    border-bottom: 1px solid #232630;
+    vertical-align: top;
+    font-size: 0.86rem;
+  }
+  tr:last-child td{ border-bottom: none; }
+  td input[type=text], td input[type=date], td textarea, .field{
+    width: 100%;
+    background: #0f1116;
+    border: 1px solid var(--panel-line);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    border-radius: 4px;
+  }
+  td textarea{ resize: none; min-height: 34px; overflow: hidden; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; font-family: inherit; }
+  select.field{ background: #0f1116; }
+
+  .status-chip{
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .status-Draft{ background: #232630; color: var(--text-dim); }
+  .status-Programmed{ background: rgba(201,151,63,0.15); color: var(--gold); border-color: var(--gold-dim); }
+  .status-Confirmed{ background: rgba(82,160,95,0.15); color: var(--go); border-color: #3f7a49; }
+
+  .table-scroll{ overflow-x: auto; }
+  tr.flag-row{ box-shadow: inset 3px 0 0 var(--standby); }
+  .flag-dot{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background: var(--standby); margin-right:6px; vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  /* Home / To-do */
+  .todo-row{
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    gap: 10px;
+    align-items: start;
+    padding: 9px 0;
+    border-bottom: 1px solid #232630;
+  }
+  .todo-row:last-child{ border-bottom: none; }
+  .todo-label{ font-size: 0.88rem; font-weight: 500; }
+  .todo-date{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gold);
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+  .todo-row.decision .todo-label{ color: var(--text); }
+  .todo-row .flag-dot{ margin-top: 4px; }
+
+  /* Script */
+  .scene-card{ background: var(--panel-raised); border:1px solid var(--panel-line); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
+  .scene-head{ display:flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .scene-title{ font-family:'Fraunces', serif; font-weight:600; font-size: 1rem; }
+  .scene-pages{ font-family:'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--text-faint); }
+  .scene-synopsis{ font-size: 0.85rem; color: var(--text-dim); margin-top: 6px; line-height: 1.4; }
+  .scene-cues{ margin-top: 8px; display:flex; gap:6px; flex-wrap: wrap; }
+  .scene-cue-chip{
+    font-family:'IBM Plex Mono', monospace; font-size: 0.68rem;
+    background: rgba(201,151,63,0.12); color: var(--gold); border:1px solid var(--gold-dim);
+    padding: 2px 7px; border-radius: 999px;
+  }
+  .scene-cue-chip.none{ color: var(--text-faint); border-color: var(--panel-line); background:none; }
+
+  /* Meetings */
+  .meeting-card{ background: var(--panel-raised); border:1px solid var(--panel-line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
+  .meeting-head{ display:flex; gap:10px; align-items:baseline; margin-bottom: 8px; flex-wrap: wrap; }
+  .meeting-head input[type=date]{ width: 150px; }
+  .meeting-head input[type=text]{ flex: 1; min-width: 160px; }
+  .meeting-card textarea{ width:100%; min-height: 54px; background:#0f1116; border:1px solid var(--panel-line); color:var(--text); padding:8px; border-radius:4px; font-size:0.85rem; font-family:'Work Sans', sans-serif; margin-top: 6px; }
+  .meeting-field-label{ font-family:'IBM Plex Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); margin-top: 8px; display:block; }
+
+  /* Best Practices timeline */
+  .bp-item{ display:flex; gap: 14px; padding-bottom: 20px; position: relative; }
+  .bp-item:not(:last-child)::before{
+    content:''; position:absolute; left: 5px; top: 16px; bottom: -4px; width: 2px; background: var(--panel-line);
+  }
+  .bp-dot{ width: 12px; height: 12px; border-radius: 50%; background: var(--gold); margin-top: 3px; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(201,151,63,0.15); }
+  .bp-item.bp-tech .bp-dot{ background: var(--go); box-shadow: 0 0 0 3px rgba(82,160,95,0.18); }
+  .bp-content{ flex: 1; }
+  .bp-head{ display:flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .bp-lead{ font-family:'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold); }
+  .bp-item.bp-tech .bp-lead{ color: var(--go); }
+  .bp-date{ font-family:'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--text-faint); }
+  .bp-title{ font-family:'Fraunces', serif; font-weight: 600; font-size: 1rem; margin-top: 3px; }
+  .bp-body{ font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; margin-top: 5px; max-width: 640px; }
+
+  .empty{
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--text-faint);
+    font-size: 0.85rem;
+  }
+  .empty .big{ font-family:'Fraunces', serif; font-size: 1.4rem; color: var(--text-dim); display:block; margin-bottom: 6px; }
+
+  /* Schedule */
+  .sched-row{
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    gap: 10px;
+    align-items: start;
+    padding: 9px 0;
+    border-bottom: 1px solid #232630;
+  }
+  .sched-row:last-child{ border-bottom: none; }
+  .sched-date{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gold);
+    padding-top: 6px;
+    white-space: nowrap;
+  }
+  .sched-row.done .sched-label{ text-decoration: line-through; color: var(--text-faint); }
+  .sched-label{ font-weight: 500; font-size: 0.9rem; }
+  .sched-note{ font-size: 0.8rem; color: var(--text-dim); margin-top: 2px; }
+  .check{ width: 17px; height: 17px; accent-color: var(--go); margin-top: 3px; cursor: pointer; }
+  .sched-fields{ display:flex; flex-direction:column; gap:4px; }
+
+  /* Contacts */
+  .contact-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+  }
+  .contact-card{
+    background: var(--panel-raised);
+    border: 1px solid var(--panel-line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    position: relative;
+  }
+  .contact-name{ font-weight: 600; font-size: 0.92rem; }
+  .contact-role{ font-family:'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .contact-line{ font-size: 0.8rem; color: var(--text-dim); margin-top: 6px; }
+  .contact-card input{ width:100%; background:#0f1116; border:1px solid var(--panel-line); color:var(--text); padding:5px 7px; border-radius:4px; font-size:0.82rem; margin-top:4px; }
+  .contact-card .btn-ghost{ position: absolute; top: 8px; right: 8px; }
+
+  /* Notes */
+  .note-card{ background: var(--panel-raised); border:1px solid var(--panel-line); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
+  .note-scene{ font-family:'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; display:block; width: 160px; }
+  .note-card textarea{ width:100%; min-height: 60px; background:#0f1116; border:1px solid var(--panel-line); color:var(--text); padding:8px; border-radius:4px; font-size:0.86rem; font-family: 'Work Sans', sans-serif; }
+  .note-card .row-top{ display:flex; justify-content: space-between; align-items:center; }
+
+  .modal-overlay{
+    position: fixed; inset: 0; background: rgba(10,11,14,0.72);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 40; padding: 20px;
+  }
+  .modal{
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: var(--radius);
+    padding: 22px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .modal h3{ font-family:'Fraunces', serif; margin: 0 0 14px; }
+  .modal label{ font-size: 0.75rem; color: var(--text-dim); display:block; margin: 12px 0 4px; }
+  .modal input, .modal select{
+    width: 100%;
+    background: #0f1116;
+    border: 1px solid var(--panel-line);
+    color: var(--text);
+    padding: 8px 9px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.88rem;
+  }
+  .swatches{ display:flex; gap:8px; margin-top: 6px; flex-wrap: wrap; }
+  .swatch{ width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+  .swatch.selected{ border-color: #fff; }
+  .modal-actions{ display:flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+  .save-indicator{
+    position: fixed; bottom: 14px; right: 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    color: var(--text-faint);
+    display: flex; align-items:center; gap: 6px;
+    opacity: 0; transition: opacity 0.3s;
+    z-index: 50;
+  }
+  .save-indicator.show{ opacity: 1; }
+  .save-indicator .dot{ width:6px; height:6px; border-radius:50%; background: var(--go); }
+  .save-indicator.error .dot{ background: var(--standby); }
+</style>
+</head>
+<body>
+
+<!-- ===== Firebase (Firestore + Auth) for standalone deployment ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<div id="signInScreen" style="display:none; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#12141a; color:#e9e6de; font-family:'Work Sans',sans-serif;">
+  <div style="text-align:center; max-width:320px; padding:24px;">
+    <div style="font-family:'Fraunces',serif; font-weight:700; font-size:1.6rem; margin-bottom:6px;">Sound Hub</div>
+    <div style="color:#9195a3; font-size:0.85rem; margin-bottom:24px;">Sign in to load your production data.</div>
+    <button id="googleSignInBtn" style="background:#c9973f; color:#1a1508; border:none; padding:10px 18px; border-radius:6px; font-weight:600; font-size:0.9rem; cursor:pointer;">Sign in with Google</button>
+    <div id="signInError" style="color:#c1443b; font-size:0.78rem; margin-top:14px;"></div>
+  </div>
+</div>
+
+<div class="app" id="app"></div>
+<div class="save-indicator" id="saveIndicator"><span class="dot"></span><span id="saveText">Saved</span></div>
+
+<script>
+// ===== FIREBASE CONFIG =====
+// Paste the config object from Firebase Console → Project Settings → Your apps → Web app.
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT_ID",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID",
+};
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const fbAuth = firebase.auth();
+const fbDb = firebase.firestore();
+let fbUser = null;
+
+function userSoundhubCollection(){
+  return fbDb.collection('users').doc(fbUser.uid).collection('soundhub');
+}
+
+// Drop-in replacement for the Claude-artifact window.storage API, backed by Firestore.
+window.storage = {
+  async get(key){
+    const snap = await userSoundhubCollection().doc(key).get();
+    if(!snap.exists) return null;
+    const data = snap.data();
+    return { key, value: data.value, shared: false };
+  },
+  async set(key, value){
+    await userSoundhubCollection().doc(key).set({ key, value, updatedAt: Date.now() });
+    return { key, value, shared: false };
+  },
+  async delete(key){
+    await userSoundhubCollection().doc(key).delete();
+    return { key, deleted: true, shared: false };
+  },
+  async list(prefix){
+    let q = userSoundhubCollection();
+    if(prefix){
+      q = q.where('key', '>=', prefix).where('key', '<', prefix + '\uf8ff');
+    }
+    const snaps = await q.get();
+    return { keys: snaps.docs.map(d => d.id), prefix, shared: false };
+  }
+};
+
+document.getElementById('googleSignInBtn').onclick = () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  fbAuth.signInWithPopup(provider).catch(e => {
+    document.getElementById('signInError').textContent = e.message;
+  });
+};
+
+fbAuth.onAuthStateChanged(user => {
+  const signInScreen = document.getElementById('signInScreen');
+  const appEl = document.getElementById('app');
+  if(user){
+    fbUser = user;
+    signInScreen.style.display = 'none';
+    appEl.style.display = '';
+    loadAll();
+  } else {
+    fbUser = null;
+    signInScreen.style.display = 'flex';
+    appEl.style.display = 'none';
+  }
+});
+</script>
+
+<script>
+/* ---------------------------------------------------------
+   Theatre Sound Design Hub
+   Reusable, multi-show production tool for a sound designer.
+   Data persists via window.storage, personal (not shared).
+--------------------------------------------------------- */
+
+const SHOWS_KEY = 'soundhub:shows';
+const showDataKey = (id) => `soundhub:data:${id}`;
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+
+const SHOW_COLORS = ['#c9973f','#52a05f','#7a8fd1','#c1443b','#9a6bc9','#4fa5a5'];
+
+// ---- default seed data for Murder on the Orient Express ----
+function seedShows(){
+  return [{
+    id: 'motoe',
+    title: "Murder on the Orient Express",
+    subtitle: "Christie / adapt. Ludwig \u2014 dir. Michael Kirkland",
+    venue: "DeDe Robertson Theatre",
+    dates: "Oct 2\u20134 & 9\u201311, 2026",
+    color: '#c9973f'
+  }];
+}
+
+function seedShowData(){
+  return {
+    castMembers: [
+      { id: uid(), role:'Hercule Poirot', actor:'Garry Manasco', notes:'Guest Artist' },
+      { id: uid(), role:'Monsieur Bouc', actor:'Vince Harrill', notes:'' },
+      { id: uid(), role:'Mary Debenham', actor:'Carmen Wells', notes:'' },
+      { id: uid(), role:'Hector MacQueen', actor:'Caleb Hurtado', notes:'' },
+      { id: uid(), role:'Michel, the Conductor', actor:'John Gorre', notes:'' },
+      { id: uid(), role:'Princess Dragomiroff', actor:'Whitney Leonard', notes:'' },
+      { id: uid(), role:'Greta Ohlsson', actor:'Monica Leon-York', notes:'' },
+      { id: uid(), role:'Countess Andrenyi', actor:'Ivanka Bzhezinska', notes:'' },
+      { id: uid(), role:'Helen Hubbard', actor:'Kelli Overmyer', notes:'' },
+      { id: uid(), role:'Colonel Arbuthnot', actor:'Justice Leman', notes:'' },
+      { id: uid(), role:'Samuel Ratchett', actor:'Micah Kelson', notes:'' },
+      { id: uid(), role:'Maitre D (Head Waiter) / Station Porter 1', actor:'Luke Patterson', notes:'' },
+      { id: uid(), role:'Waiter 1 / Station Porter 2', actor:'TBA', notes:'' },
+      { id: uid(), role:'Waiter 2 / Station Porter 2', actor:'TBA', notes:'' },
+      { id: uid(), role:'Daisy Armstrong (Child V.O.)', actor:'TBA', notes:'' },
+    ],
+    cues: [
+      { id: uid(), num:'S-1', sceneAct:'I-1', label:'SFX: Train approaching / roaring toward audience', trigger:'Start in darkness; build quietly to full roar', notes:'Opening image; highlighted train coming toward us. Candidate files: MOE_SFX_Train_Pass_By.wav + MOE_SFX_Train_Whistle.wav', status:'Draft' },
+      { id: uid(), num:'S-2', sceneAct:'I-1', label:'SFX: Train passes with whistle and roar', trigger:"Crossfade from girl's scream into train whistle; fast pass-by", notes:'Candidate files: MOE_SFX_Train_Pass_By.wav + MOE_SFX_Train_Whistle.wav', status:'Draft' },
+      { id: uid(), num:'S-3', sceneAct:'I-1', label:'SFX: Steam release / billowing train steam', trigger:'Auto-follow after pass-by', notes:'Coordinate with practical/theatrical steam', status:'Draft' },
+      { id: uid(), num:'S-4', sceneAct:'I-1', label:'MUS: Middle Eastern music', trigger:'Fade under Poirot narration', notes:'Istanbul transition', status:'Draft' },
+      { id: uid(), num:'S-5', sceneAct:'I-2', label:'* MUS: "I Want to Go Back to Michigan" - small hotel band', trigger:'Loop/underscore as scene opens; fade as needed', notes:'Public domain \u2014 no clearance needed; note says Krista', status:'Draft' },
+      { id: uid(), num:'S-6', sceneAct:'I-2 to I-3', label:'MUS: Mahler Symphony No. 1 - "Vorw\u00e4rts Dr\u00e4ngend" passage', trigger:'Scene transition; strong build into station', notes:'', status:'Draft' },
+      { id: uid(), num:'S-7', sceneAct:'I-3', label:'AMB: Istanbul train-station platform - steam, crowd activity, distant bells/whistles', trigger:'Establish before announcement; continue softly', notes:'Candidate file: MOE_AMB_Train_Station_Crowd_Announcement.wav', status:'Draft' },
+      { id: uid(), num:'S-8', sceneAct:'I-3', label:'SFX: Train bell / "All aboard" departure signal', trigger:'Trigger on Conductor: "All aboard!"', notes:'', status:'Draft' },
+      { id: uid(), num:'S-9', sceneAct:'I-3', label:'SFX: Train hoot, bells, steam and platform departure activity', trigger:'Build into transition', notes:'', status:'Draft' },
+      { id: uid(), num:'S-10', sceneAct:'I-3 to I-4', label:'MUS: Mahler Symphony No. 1 - fourth movement', trigger:'Transition into dining car; majestic entrance', notes:'', status:'Draft' },
+      { id: uid(), num:'S-11', sceneAct:'I-4', label:'SFX: Train start-up - kerchunk, lurch, rolling wheels, clangs and horn', trigger:'Layered start; accelerate with lighting/movement', notes:'', status:'Draft' },
+      { id: uid(), num:'S-12', sceneAct:'I-4', label:'MUS: "Flight of the Bumblebee" opening', trigger:'Start simultaneously with train movement', notes:'', status:'Draft' },
+      { id: uid(), num:'S-13', sceneAct:'I-5', label:'AMB (?): Interior of moving train', trigger:'Continuous low-level carriage/rail bed', notes:'Ask director whether continuous interior ambience is wanted. Candidate file: MOE_AMB_Interior_Moving_Train.wav', status:'Draft' },
+      { id: uid(), num:'S-14', sceneAct:'I-5', label:'SFX: Radio turns on / period radio sound', trigger:'Source from Hubbard compartment', notes:'Resolved: actress sings live over pre-recorded music track (same approach used previously). Candidate file: MOE_SFX_Radio_Click.wav', status:'Draft' },
+      { id: uid(), num:'S-15', sceneAct:'I-5', label:'* MUS: "Charleston"', trigger:'Source/radio-style treatment; under Hubbard singing', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
+      { id: uid(), num:'S-16', sceneAct:'I-5 to I-6', label:'AMB: Wind howling / worsening snowstorm', trigger:'Build during transition', notes:'Candidate file: MOE_AMB_Blizzard_Wind.wav', status:'Draft' },
+      { id: uid(), num:'S-17', sceneAct:'I-5 to I-6', label:'SFX: Train rush-by - zoom, horn and metallic clangs', trigger:'Punctuate transition', notes:'', status:'Draft' },
+      { id: uid(), num:'S-18', sceneAct:'I-6', label:'SFX: Radio tuning screech and static', trigger:'Tuning sweep into crackling signal', notes:'Candidate files: MOE_SFX_Radio_Click.wav + MOE_SFX_Old_Radio_Transmission.wav', status:'Draft' },
+      { id: uid(), num:'S-19', sceneAct:'I-6', label:'AMB: Interior moving train under radio transmission', trigger:'Low loop beneath dialogue/static', notes:'Candidate file: MOE_AMB_Interior_Moving_Train.wav', status:'Draft' },
+      { id: uid(), num:'S-20', sceneAct:'I-7', label:'SFX: Interior train decelerates and stops', trigger:'Slow rail rhythm, braking/settling stop', notes:'Candidate file: MOE_AMB_Interior_Moving_Train.wav; program fade to stop', status:'Draft' },
+      { id: uid(), num:'S-21', sceneAct:'I-8 to I-9', label:'MUS: Rossini, La Gazza Ladra overture - approx. 2 minutes in', trigger:'Immediate transition to morning', notes:'Candidate file: MOE_AMB_Blizzard_Wind.wav; use filtered/inside perspective if needed', status:'Draft' },
+      { id: uid(), num:'S-22', sceneAct:'I-9', label:'AMB: Wind howling through open compartment window', trigger:'Fade up when room is opened', notes:'', status:'Draft' },
+      { id: uid(), num:'S-23', sceneAct:'I-9', label:"AMB: Horror / terror sting at body reveal", trigger:"Sharp sting into Greta's scream", notes:'', status:'Draft' },
+      { id: uid(), num:'S-24', sceneAct:'I-9 to I-10', label:'MUS: Rossini, La Gazza Ladra - discordant passage', trigger:'Blackout transition', notes:'', status:'Draft' },
+      { id: uid(), num:'S-25', sceneAct:'I-10', label:'SFX: Offstage scream followed by gunshot', trigger:"Scream first, then gunshot; motivated from Ratchett's room", notes:'', status:'Draft' },
+      { id: uid(), num:'S-26', sceneAct:'I-10', label:'SFX (?): Screech of sound into blackout', trigger:'Short transition sting', notes:'Ask director if this cue is needed', status:'Draft' },
+      { id: uid(), num:'S-27', sceneAct:'II-1', label:'AMB + * MUS: Discordant opening bars of Mahler Symphony No. 5, "St\u00fcrmisch Bewegt"', trigger:'Blast at Act II opening', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
+      { id: uid(), num:'S-28', sceneAct:'II-3 to II-4', label:'* MUS: Bach Cello Suite No. 2 in D minor - first movement (Pr\u00e9lude)', trigger:'Agonized solo cello; fade with lights', notes:'Candidate files: MOE_SFX_Radio_Click.wav + MOE_SFX_Old_Radio_Transmission.wav', status:'Draft' },
+      { id: uid(), num:'S-29', sceneAct:'II-4', label:'SFX: Radio static / crackle', trigger:'Radio-transmitter source', notes:'', status:'Draft' },
+      { id: uid(), num:'S-30', sceneAct:'II-4 to II-5', label:'* MUS: Haydn String Quartet in D minor, Op. 76 No. 2 - Allegro', trigger:'Crossfade into next scene', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
+      { id: uid(), num:'S-31', sceneAct:'II-5', label:'AMB: Flashback transition sting', trigger:'Bang into blue-light flashback', notes:'', status:'Draft' },
+      { id: uid(), num:'S-32', sceneAct:'II-5', label:'AMB: Terror sting during flashback body discovery', trigger:'Replay the body-reveal terror sound', notes:'', status:'Draft' },
+      { id: uid(), num:'S-33', sceneAct:'II-5', label:'SFX: Distant gunshot replay', trigger:'Two highlighted gunshot beats; reuse same file', notes:'', status:'Draft' },
+      { id: uid(), num:'S-34', sceneAct:'II-5', label:'SFX: Gunshot replay - reveal sequence', trigger:"Trigger after Mary's flashback scream", notes:'', status:'Draft' },
+      { id: uid(), num:'S-35', sceneAct:'II-5', label:'* MUS: "Alexander\'s Ragtime Band"', trigger:'Hubbard flashback/source performance', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
+      { id: uid(), num:'S-36', sceneAct:'II-5', label:'AMB (?): Murder-memory sequence - repeated screeches of terror', trigger:'Layer under/around eight stabbing actions', notes:'Ask director if the repeated terror sequence is desired', status:'Draft' },
+      { id: uid(), num:'S-37', sceneAct:'II-5 / Finale', label:'SFX: Train begins moving - kerchunk, rolling wheels, chug, whistle and bells', trigger:'Build through final tableau; continue under closing speech', notes:'Candidate files: MOE_AMB_Interior_Moving_Train.wav + MOE_SFX_Train_Whistle.wav + MOE_SFX_Train_Pass_By.wav', status:'Draft' },
+    ],
+    schedule: [
+      { id: uid(), date: '2026-08-17', label: 'Rehearsals begin (read-thru)', note: '', done: false },
+      { id: uid(), date: '2026-08-21', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
+      { id: uid(), date: '2026-08-28', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
+      { id: uid(), date: '2026-09-04', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
+      { id: uid(), date: '2026-09-07', label: 'Start gathering sound cues', note: '', done: false },
+      { id: uid(), date: '2026-09-11', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
+      { id: uid(), date: '2026-09-16', label: 'Cue lists due to SM', note: '', done: false },
+      { id: uid(), date: '2026-09-18', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
+      { id: uid(), date: '2026-09-18', label: 'Paper tech', note: 'On or before this date', done: false },
+      { id: uid(), date: '2026-09-21', label: 'Light focus', note: '', done: false },
+      { id: uid(), date: '2026-09-22', label: 'Light cueing', note: '', done: false },
+      { id: uid(), date: '2026-09-23', label: 'Tech \u2014 Act I', note: 'Cast call 6:30pm', done: false },
+      { id: uid(), date: '2026-09-24', label: 'Tech \u2014 Act II', note: 'Cast call 6:30pm', done: false },
+      { id: uid(), date: '2026-09-25', label: 'Tech \u2014 full run, all tech', note: 'Cast call 6:30pm', done: false },
+      { id: uid(), date: '2026-09-28', label: 'Dress 1', note: '', done: false },
+      { id: uid(), date: '2026-09-29', label: 'Dress 2', note: '', done: false },
+      { id: uid(), date: '2026-09-30', label: 'Dress 3', note: '', done: false },
+      { id: uid(), date: '2026-10-01', label: 'Final Dress / IDR', note: '', done: false },
+      { id: uid(), date: '2026-10-02', label: 'Performance weekend 1 begins', note: 'Oct 2\u20134', done: false },
+      { id: uid(), date: '2026-10-08', label: 'Brush-up & photo call', note: '', done: false },
+      { id: uid(), date: '2026-10-09', label: 'Performance weekend 2 begins', note: 'Oct 9\u201311', done: false },
+      { id: uid(), date: '2026-10-11', label: 'Set strike', note: 'Follows final performance', done: false },
+    ],
+    scriptScenes: [
+      { id: uid(), tag:'I-1', label:'Act I, Scene 1', pages:'11-13', synopsis:'Prologue: a domestic bedtime scene is interrupted by an intruder, told entirely through sound and shadow. Transitions into Poirot addressing the audience directly.' },
+      { id: uid(), tag:'I-2', label:'Act I, Scene 2', pages:'14-18', synopsis:'Tokatlian Hotel dining room, Istanbul. Poirot is introduced to Arbuthnot, Debenham, Hubbard, and MacQueen; reunites with old friend Bouc.' },
+      { id: uid(), tag:'I-3', label:'Act I, Scene 3', pages:'19-25', synopsis:'The Istanbul station platform. Passengers board the Orient Express; Michel checks in the Princess, Greta, Mary, Ratchett, the Countess, and Mrs. Hubbard.' },
+      { id: uid(), tag:'I-4', label:'Act I, Scene 4', pages:'26-29', synopsis:'The dining car. Ratchett tries to hire Poirot for protection and is refused; the train departs the station.' },
+      { id: uid(), tag:'I-5', label:'Act I, Scene 5', pages:'30-33', synopsis:'Nighttime in the sleeping compartments. Mrs. Hubbard\u2019s radio antics annoy Ratchett; tension escalates between neighbors.' },
+      { id: uid(), tag:'I-6', label:'Act I, Scene 6', pages:'34', synopsis:'Michel struggles with the train\u2019s two-way radio as the snowstorm worsens.' },
+      { id: uid(), tag:'I-7', label:'Act I, Scene 7', pages:'35-37', synopsis:'The observation deck. Arbuthnot and Debenham share a private, anxious moment together.' },
+      { id: uid(), tag:'I-8', label:'Act I, Scene 8', pages:'37-38', synopsis:'Mrs. Hubbard raises an alarm that a man was in her compartment.' },
+      { id: uid(), tag:'I-9', label:'Act I, Scene 9', pages:'39-41', synopsis:'The train is stopped by a snowdrift; Ratchett is discovered murdered in his locked compartment.' },
+      { id: uid(), tag:'I-10', label:'Act I, Scene 10', pages:'41-57', synopsis:'Poirot begins his investigation \u2014 examining the body, the clues, and interviewing passengers \u2014 ending with Debenham found shot.' },
+      { id: uid(), tag:'II-1', label:'Act II, Scene 1', pages:'59-63', synopsis:'Immediately following the Act I cliffhanger; Debenham is found alive, wounded, and is questioned about what she saw.' },
+      { id: uid(), tag:'II-2', label:'Act II, Scene 2', pages:'64', synopsis:'Michel attempts to radio Zagreb for help amid the ongoing blizzard.' },
+      { id: uid(), tag:'II-3', label:'Act II, Scene 3', pages:'65-76', synopsis:'The dining car. Poirot continues interviewing suspects, including a tense confrontation with Arbuthnot and a private exchange with the Countess.' },
+      { id: uid(), tag:'II-4', label:'Act II, Scene 4', pages:'77', synopsis:'Bouc radios Zagreb Station directly, relaying the train\u2019s dire conditions.' },
+      { id: uid(), tag:'II-5', label:'Act II, Scene 5', pages:'78-91', synopsis:'Poirot gathers all suspects, reveals two possible solutions to the murder, and the emotional resolution and epilogue follow.' },
+    ],
+    meetings: [
+      { id: uid(), date: '2026-08-21', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
+      { id: uid(), date: '2026-08-28', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
+      { id: uid(), date: '2026-09-04', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
+      { id: uid(), date: '2026-09-11', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
+      { id: uid(), date: '2026-09-18', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
+    ],
+    files: [
+      { id: uid(), name:'MOE_SFX_Train_Pass_By.wav', type:'SFX', cueRef:'S-1, S-2, S-37', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
+      { id: uid(), name:'MOE_SFX_Train_Whistle.wav', type:'SFX', cueRef:'S-1, S-2, S-37', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
+      { id: uid(), name:'MOE_AMB_Train_Station_Crowd_Announcement.wav', type:'AMB', cueRef:'S-7', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
+      { id: uid(), name:'MOE_AMB_Interior_Moving_Train.wav', type:'AMB', cueRef:'S-13, S-19, S-20, S-37', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
+      { id: uid(), name:'MOE_SFX_Radio_Click.wav', type:'SFX', cueRef:'S-14, S-18, S-28', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
+      { id: uid(), name:'MOE_AMB_Blizzard_Wind.wav', type:'AMB', cueRef:'S-16, S-21', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
+      { id: uid(), name:'MOE_SFX_Old_Radio_Transmission.wav', type:'SFX', cueRef:'S-18, S-28', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
+      { id: uid(), name:'I Want to Go Back to Michigan (Irving Berlin)', type:'MUS', cueRef:'S-5', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+      { id: uid(), name:'Mahler Symphony No. 1 \u2014 Vorw\u00e4rts Dr\u00e4ngend', type:'MUS', cueRef:'S-6', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+      { id: uid(), name:'Alexander\u2019s Ragtime Band (Irving Berlin)', type:'MUS', cueRef:'S-35', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+      { id: uid(), name:'The Charleston (James P. Johnson)', type:'MUS', cueRef:'S-15', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+      { id: uid(), name:'Rossini \u2014 Overture to La Gazza Ladra', type:'MUS', cueRef:'S-21', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+      { id: uid(), name:'Mahler Symphony No. 5 \u2014 St\u00fcrmisch Bewegt', type:'MUS', cueRef:'S-27', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+      { id: uid(), name:'Bach Cello Suite (D minor) \u2014 Pr\u00e9lude', type:'MUS', cueRef:'S-28', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain \u2014 script says Suite No. 2, cue sheet says No. 5; confirm which' },
+      { id: uid(), name:'Haydn String Quartet Op. 76 No. 2 \u2014 Allegro', type:'MUS', cueRef:'S-30', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+      { id: uid(), name:'Flight of the Bumblebee (Rimsky-Korsakov, arr. Rachmaninoff)', type:'MUS', cueRef:'S-12', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
+    ],
+    contacts: [
+      { id: uid(), name: 'Eric Harrell', role: 'Department Chair', phone: '757-667-1358', email: '', notes: 'COM 246' },
+      { id: uid(), name: 'Michael Kirkland', role: 'Director', phone: '757-617-7174', email: '', notes: 'COM 224' },
+      { id: uid(), name: 'Meredith Keen', role: 'Production Stage Manager', phone: '', email: '', notes: '' },
+      { id: uid(), name: 'Krista Lauro', role: 'Production Manager', phone: '757-632-5065', email: '', notes: 'Box Office' },
+      { id: uid(), name: 'Kimmy Haggard', role: 'Admin / Travel Logistics', phone: '757-334-4489', email: '', notes: 'COM 256' },
+      { id: uid(), name: 'Freddy Farmer', role: 'Technical Director', phone: '804-721-4507', email: '', notes: 'Scene Shop' },
+      { id: uid(), name: 'Stacy Brannan', role: 'Costume Design', phone: '651-335-3891', email: '', notes: 'Costume Shop' },
+      { id: uid(), name: 'Cyndi Woodward', role: 'Scenic Design', phone: '', email: '', notes: 'Guest designer' },
+      { id: uid(), name: 'Bess Park', role: 'Lighting Design', phone: '', email: '', notes: 'Guest designer' },
+    ],
+    notes: []
+  };
+}
+
+// ---------------- state ----------------
+let state = {
+  shows: [],
+  activeShowId: null,
+  activeTab: 'schedule',
+  data: {}, // showId -> showData
+};
+
+let saveTimer = null;
+
+function flashSave(ok, text){
+  const el = document.getElementById('saveIndicator');
+  const t = document.getElementById('saveText');
+  t.textContent = text || (ok ? 'Saved' : 'Save failed \u2014 kept locally');
+  el.classList.toggle('error', !ok);
+  el.classList.add('show');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+async function persistShows(){
+  try{
+    await window.storage.set(SHOWS_KEY, JSON.stringify(state.shows));
+    flashSave(true);
+  }catch(e){ flashSave(false); }
+}
+async function persistShowData(id){
+  try{
+    await window.storage.set(showDataKey(id), JSON.stringify(state.data[id]));
+    flashSave(true);
+  }catch(e){ flashSave(false); }
+}
+
+function currentData(){
+  return state.data[state.activeShowId];
+}
+
+// ---------------- load ----------------
+async function loadAll(){
+  try{
+    const res = await window.storage.get(SHOWS_KEY);
+    state.shows = res ? JSON.parse(res.value) : seedShows();
+  }catch(e){
+    state.shows = seedShows();
+  }
+  if(!state.shows.length) state.shows = seedShows();
+  state.activeShowId = state.shows[0].id;
+
+  for(const s of state.shows){
+    try{
+      const r = await window.storage.get(showDataKey(s.id));
+      const loaded = r ? JSON.parse(r.value) : null;
+      const fallback = s.id === 'motoe' ? seedShowData() : blankShowData();
+      state.data[s.id] = loaded ? { ...fallback, ...loaded } : fallback;
+    }catch(e){
+      state.data[s.id] = (s.id === 'motoe' ? seedShowData() : blankShowData());
+    }
+  }
+
+  // One-time migration: earlier sessions may have already persisted an empty
+  // meetings list before these dates were added to the seed. Inject them once.
+  const motoeData = state.data['motoe'];
+  if(motoeData && !motoeData.meetingsSeeded && motoeData.meetings.length === 0){
+    motoeData.meetings = seedShowData().meetings;
+    motoeData.meetingsSeeded = true;
+    persistShowData('motoe');
+  }
+
+  // One-time migration: mirror the production meeting dates onto the Schedule
+  // tab for sessions whose schedule was already saved before this was added.
+  if(motoeData && !motoeData.scheduleMeetingsSeeded){
+    const existingDates = new Set(motoeData.schedule.map(s => s.date + '|' + s.label));
+    const meetingDates = ['2026-08-21','2026-08-28','2026-09-04','2026-09-11','2026-09-18'];
+    meetingDates.forEach(d => {
+      if(!existingDates.has(d + '|Production meeting')){
+        motoeData.schedule.push({ id: uid(), date: d, label: 'Production meeting', note: '10:00\u201311:00 AM', done: false });
+      }
+    });
+    motoeData.scheduleMeetingsSeeded = true;
+    persistShowData('motoe');
+  }
+
+  // One-time migration: backfill the Drive folder link on existing sound
+  // file entries and add the 9 music tracks, for sessions saved before this.
+  if(motoeData && !motoeData.filesDriveLinkSeeded){
+    const DRIVE_LINK = 'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing';
+    motoeData.files.forEach(f => { if(!f.url) f.url = DRIVE_LINK; });
+    const existingNames = new Set(motoeData.files.map(f => f.name));
+    const musicTracks = [
+      { name:'I Want to Go Back to Michigan (Irving Berlin)', type:'MUS', cueRef:'S-5', notes:'Public domain' },
+      { name:'Mahler Symphony No. 1 \u2014 Vorw\u00e4rts Dr\u00e4ngend', type:'MUS', cueRef:'S-6', notes:'Public domain' },
+      { name:'Alexander\u2019s Ragtime Band (Irving Berlin)', type:'MUS', cueRef:'S-35', notes:'Public domain' },
+      { name:'The Charleston (James P. Johnson)', type:'MUS', cueRef:'S-15', notes:'Public domain' },
+      { name:'Rossini \u2014 Overture to La Gazza Ladra', type:'MUS', cueRef:'S-21', notes:'Public domain' },
+      { name:'Mahler Symphony No. 5 \u2014 St\u00fcrmisch Bewegt', type:'MUS', cueRef:'S-27', notes:'Public domain' },
+      { name:'Bach Cello Suite No. 2 in D minor \u2014 Pr\u00e9lude', type:'MUS', cueRef:'S-28', notes:'Public domain \u2014 stored in "02 Song Audio Files" subfolder' },
+      { name:'Haydn String Quartet Op. 76 No. 2 \u2014 Allegro', type:'MUS', cueRef:'S-30', notes:'Public domain' },
+      { name:'Flight of the Bumblebee (Rimsky-Korsakov, arr. Rachmaninoff)', type:'MUS', cueRef:'S-12', notes:'Public domain' },
+    ];
+    musicTracks.forEach(t => {
+      if(!existingNames.has(t.name)){
+        motoeData.files.push({ id: uid(), name:t.name, type:t.type, cueRef:t.cueRef, url:DRIVE_LINK, notes:t.notes });
+      }
+    });
+    motoeData.filesDriveLinkSeeded = true;
+    persistShowData('motoe');
+  }
+
+  // One-time migration: correct Bach Cello Suite number (script confirms No. 2, not No. 5).
+  if(motoeData && !motoeData.bachSuiteFixed){
+    const s28 = motoeData.cues.find(c => c.num === 'S-28');
+    if(s28){ s28.label = '* MUS: Bach Cello Suite No. 2 in D minor - first movement (Pr\u00e9lude)'; }
+    const bachFile = motoeData.files.find(f => /Bach Cello Suite/i.test(f.name));
+    if(bachFile){
+      bachFile.name = 'Bach Cello Suite No. 2 in D minor \u2014 Pr\u00e9lude';
+      bachFile.notes = 'Public domain \u2014 stored in "02 Song Audio Files" subfolder';
+    }
+    motoeData.bachSuiteFixed = true;
+    persistShowData('motoe');
+  }
+
+  // One-time migration: S-14 director decision resolved (actress sings live over pre-recorded track).
+  if(motoeData && !motoeData.s14Resolved){
+    const s14 = motoeData.cues.find(c => c.num === 'S-14');
+    if(s14){
+      s14.label = 'SFX: Radio turns on / period radio sound';
+      s14.notes = 'Resolved: actress sings live over pre-recorded music track (same approach used previously). Candidate file: MOE_SFX_Radio_Click.wav';
+    }
+    motoeData.s14Resolved = true;
+    persistShowData('motoe');
+  }
+
+  // One-time migration: overwrite stale "Copyright needed" notes that were saved
+  // before these 5 cues were confirmed public domain.
+  if(motoeData && !motoeData.publicDomainNotesFixed){
+    const fixes = {
+      'S-5': 'Public domain \u2014 no clearance needed; note says Krista',
+      'S-15': 'Public domain \u2014 no clearance needed',
+      'S-27': 'Public domain \u2014 no clearance needed',
+      'S-30': 'Public domain \u2014 no clearance needed',
+      'S-35': 'Public domain \u2014 no clearance needed',
+    };
+    motoeData.cues.forEach(c => {
+      if(fixes[c.num] && /copyright|permission/i.test(c.notes || '')){
+        c.notes = fixes[c.num];
+      }
+    });
+    motoeData.publicDomainNotesFixed = true;
+    persistShowData('motoe');
+  }
+
+  // Log Aug 28 production meeting notes and cross-reference action items.
+  if(motoeData && !motoeData.aug28MeetingLogged){
+    motoeData.meetings.push({
+      id: uid(),
+      date: '2026-08-28',
+      attendees: '',
+      notes: 'Steam train interior sound wanted as an option. Gunshot SFX should be a .22 caliber shot. Need visual cues (door practicals) for the train door opening/closing while the train is moving. Need to schedule a recording session for the little girl\u2019s voice at the top of the show. Dr. K will gather period pre-show/intermission/post-show music.',
+      actionItems: 'Sound: source .22 caliber gunshot SFX. Sound: schedule ADR session for Daisy Armstrong (little girl V.O.). Sound/SM: coordinate train door practicals with lighting/stage management. Dr. K: gather period pre-show/intermission/post-show music.',
+    });
+
+    const s13 = motoeData.cues.find(c => c.num === 'S-13');
+    if(s13){ s13.notes = 'Resolved: director wants steam train interior sound available as an option (per 8/28 meeting).'; }
+
+    ['S-25','S-33','S-34'].forEach(num => {
+      const c = motoeData.cues.find(x => x.num === num);
+      if(c && !/\.22 caliber/i.test(c.notes || '')){
+        c.notes = (c.notes ? c.notes + ' ' : '') + 'Per 8/28 meeting: gunshot should be a .22 caliber shot.';
+      }
+    });
+
+    motoeData.cues.push({ id: uid(), num: `S-${motoeData.cues.length+1}`, sceneAct:'', label:'SFX: Train door opening and closing while moving', trigger:'', notes:'New from 8/28 production meeting \u2014 needs visual/practical coordination with SM and lighting, not sound alone.', status:'Draft' });
+
+    motoeData.schedule.push({ id: uid(), date: '', label: 'Schedule ADR recording session \u2014 little girl (Daisy Armstrong V.O.)', note: 'From 8/28 production meeting', done: false });
+
+    motoeData.files.push({ id: uid(), name:'Period pre-show / intermission / post-show music', type:'MUS', cueRef:'', url:'', notes:'Dr. K gathering \u2014 from 8/28 production meeting' });
+
+    motoeData.aug28MeetingLogged = true;
+    persistShowData('motoe');
+  }
+
+  // Add the Daisy Armstrong V.O. recording as an actual cue, and expand the
+  // single generic door cue into specific candidate placements throughout
+  // the script wherever the train is still underway (per 8/28 follow-up).
+  if(motoeData && !motoeData.doorAndVoCuesAdded){
+    const existingLabels = new Set(motoeData.cues.map(c => c.label));
+
+    if(!existingLabels.has('V.O.: Daisy Armstrong (little girl) recorded dialogue \u2014 bedtime scene through final scream')){
+      motoeData.cues.push({
+        id: uid(), num:'S-1A', sceneAct:'I-1',
+        label:'V.O.: Daisy Armstrong (little girl) recorded dialogue \u2014 bedtime scene through final scream',
+        trigger:'Playback under/in place of a live child actor at the top of the show, between the train SFX cues (S-1 and S-2)',
+        notes:'Requires ADR recording session (see Schedule tab). Confirm mic/reverb treatment so the V.O. reads as being in the room rather than obviously pre-recorded.',
+        status:'Draft',
+      });
+    }
+
+    // Remove the earlier generic door placeholder cue in favor of specific placements.
+    motoeData.cues = motoeData.cues.filter(c => c.label !== 'SFX: Train door opening and closing while moving');
+
+    const doorTransitions = [
+      { tag:'I-4 to I-5', desc:'as characters move between train cars while the train is underway' },
+      { tag:'I-5 to I-6', desc:'car-to-car transition during the overnight sequence' },
+      { tag:'I-6 to I-7', desc:'Michel/corridor to the observation deck' },
+      { tag:'I-7 to I-8', desc:'Arbuthnot and Mary returning from the observation deck' },
+      { tag:'I-8 to I-9', desc:'final transition before the train stops in the snowdrift'},
+    ];
+    doorTransitions.forEach(t => {
+      const label = `SFX: Exterior train door open/close \u2014 ${t.tag}`;
+      if(!existingLabels.has(label)){
+        motoeData.cues.push({
+          id: uid(), num:`S-D-${t.tag.replace(/[^0-9IV]/gi,'')}`, sceneAct:t.tag,
+          label,
+          trigger:`Candidate placement, ${t.desc}`,
+          notes:'Proposed per 8/28 meeting \u2014 the published script does not call this out explicitly as a distinct cue; confirm exact staging/blocking and count of doors with director and SM before finalizing. Act II occurs after the train has stopped in the snowdrift, so no further placements are proposed there.',
+          status:'Draft',
+        });
+      }
+    });
+
+    motoeData.doorAndVoCuesAdded = true;
+    persistShowData('motoe');
+  }
+  render();
+}
+
+function blankShowData(){
+  return { castMembers: [], scriptScenes: [], cues: [], schedule: [], files: [], meetings: [], contacts: [], notes: [] };
+}
+
+// ---------------- render root ----------------
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="rail">
+      <div class="wordmark">Sound Hub<small>Production Cue &amp; Schedule Console</small></div>
+      <div class="strip-list" id="stripList"></div>
+      <button class="add-show-btn" id="addShowBtn">+ New show</button>
+      <div class="rail-footer">Local console<br>data stays on this device</div>
+    </div>
+    <div class="main" id="mainArea"></div>
+  `;
+  renderStrips();
+  document.getElementById('addShowBtn').onclick = openNewShowModal;
+  renderMain();
+}
+
+function renderStrips(){
+  const list = document.getElementById('stripList');
+  list.innerHTML = state.shows.map(s => `
+    <button class="strip ${s.id === state.activeShowId ? 'active' : ''}" style="--show-color:${s.color}" data-id="${s.id}">
+      <div class="strip-edge"></div>
+      <span class="strip-tape">${escapeHtml(s.title)}</span>
+      <div class="strip-meta">${escapeHtml(s.dates || '')}</div>
+    </button>
+  `).join('');
+  list.querySelectorAll('.strip').forEach(btn => {
+    btn.onclick = () => { state.activeShowId = btn.dataset.id; render(); };
+  });
+}
+
+function renderMain(){
+  const show = state.shows.find(s => s.id === state.activeShowId);
+  const main = document.getElementById('mainArea');
+  if(!show){ main.innerHTML = ''; return; }
+
+  main.innerHTML = `
+    <div class="show-header">
+      <h1 class="show-title">${escapeHtml(show.title)}</h1>
+      <div class="show-sub">${escapeHtml(show.subtitle || '')}<span>&middot;</span>${escapeHtml(show.venue || '')}<span>&middot;</span>${escapeHtml(show.dates || '')}
+        <button class="btn btn-ghost btn-sm" id="editShowBtn" style="margin-left:8px;">edit</button>
+        ${state.shows.length > 1 ? `<button class="btn btn-ghost btn-sm" id="deleteShowBtn">delete show</button>` : ''}
+      </div>
+    </div>
+    <div class="waveline" id="waveline"></div>
+    <div class="tabs">
+      ${tabDef('schedule','Schedule')}
+      ${tabDef('cues','Cues')}
+      ${tabDef('files','Sound Files')}
+      ${tabDef('cast','Cast')}
+      ${tabDef('script','Script')}
+      ${tabDef('notes','Notes')}
+      ${tabDef('meetings','Meeting Notes')}
+      ${tabDef('contacts','Contacts')}
+      ${tabDef('bestpractices','Best Practices')}
+    </div>
+    <div id="tabContent"></div>
+  `;
+  buildWaveline();
+
+  document.getElementById('editShowBtn').onclick = () => openEditShowModal(show);
+  const delBtn = document.getElementById('deleteShowBtn');
+  if(delBtn) delBtn.onclick = () => deleteShow(show.id);
+
+  main.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.onclick = () => { state.activeTab = btn.dataset.tab; renderMain(); };
+  });
+
+  const content = document.getElementById('tabContent');
+  if(state.activeTab === 'cast') content.innerHTML = castTemplate();
+  if(state.activeTab === 'script') content.innerHTML = scriptTemplate();
+  if(state.activeTab === 'cues') content.innerHTML = cuesTemplate();
+  if(state.activeTab === 'schedule') content.innerHTML = scheduleTemplate();
+  if(state.activeTab === 'files') content.innerHTML = filesTemplate();
+  if(state.activeTab === 'meetings') content.innerHTML = meetingsTemplate();
+  if(state.activeTab === 'contacts') content.innerHTML = contactsTemplate();
+  if(state.activeTab === 'notes') content.innerHTML = notesTemplate();
+  if(state.activeTab === 'bestpractices') content.innerHTML = bestPracticesTemplate();
+
+  wireTabEvents();
+}
+
+function tabDef(id, label){
+  return `<button class="tab-btn ${state.activeTab===id?'active':''}" data-tab="${id}">${label}</button>`;
+}
+
+function buildWaveline(){
+  const wl = document.getElementById('waveline');
+  let bars = '';
+  for(let i=0;i<48;i++){
+    const h = 4 + Math.round(Math.abs(Math.sin(i*0.7))*10);
+    const delay = (i * 0.04).toFixed(2);
+    bars += `<i style="height:${h}px; animation-delay:${delay}s;"></i>`;
+  }
+  wl.innerHTML = bars;
+}
+
+function autoGrow(el){
+  if(!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ---------------- SCRIPT ----------------
+function scriptTemplate(){
+  const data = currentData();
+  const rows = data.scriptScenes.map(s => {
+    const cues = data.cues.filter(c => c.sceneAct && c.sceneAct.includes(s.tag));
+    return `
+    <div class="scene-card" data-id="${s.id}">
+      <div class="scene-head">
+        <input type="text" class="field scene-label-input" value="${escapeHtml(s.label)}" style="max-width:220px; font-family:'Fraunces',serif; font-weight:600;">
+        <input type="text" class="field scene-pages-input" value="${escapeHtml(s.pages)}" style="max-width:100px;" placeholder="Pages">
+        <button class="btn btn-ghost btn-sm scene-del" title="Remove">\u2715</button>
+      </div>
+      <textarea class="field scene-synopsis-input" rows="2" placeholder="Synopsis (your own words \u2014 no script text)">${escapeHtml(s.synopsis)}</textarea>
+      <div class="scene-cues">
+        ${cues.length ? cues.map(c => `<span class="scene-cue-chip">${escapeHtml(c.num)}</span>`).join('') : `<span class="scene-cue-chip none">no cues tagged ${escapeHtml(s.tag)}</span>`}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Script reference</h3>
+        <button class="btn btn-gold btn-sm" id="addSceneBtn">+ Add scene</button>
+      </div>
+      <div class="hint" style="margin:-4px 0 12px;">Structural reference only \u2014 scene, page range, and a plain-language synopsis. No script text is stored here; the published script stays with your physical/PDF copy.</div>
+      ${data.scriptScenes.length === 0 ? `<div class="empty"><span class="big">No scenes yet</span>Add scenes to track alongside your cues.</div>` : rows}
+    </div>
+  `;
+}
+
+function wireScriptEvents(){
+  const data = currentData();
+  document.getElementById('addSceneBtn').onclick = () => {
+    data.scriptScenes.push({ id: uid(), tag:'', label:'New scene', pages:'', synopsis:'' });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('.scene-card').forEach(card => {
+    const id = card.dataset.id;
+    const s = data.scriptScenes.find(x => x.id === id);
+    card.querySelector('.scene-label-input').onchange = e => { s.label = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.scene-pages-input').onchange = e => { s.pages = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.scene-synopsis-input').onchange = e => { s.synopsis = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.scene-del').onclick = () => {
+      data.scriptScenes = data.scriptScenes.filter(x => x.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+
+// ---------------- MEETING NOTES ----------------
+function meetingsTemplate(){
+  const data = currentData();
+  const sorted = [...data.meetings].sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  const cards = sorted.map(m => `
+    <div class="meeting-card" data-id="${m.id}">
+      <div class="meeting-head">
+        <input type="date" class="field meeting-date-input" value="${escapeHtml(m.date)}">
+        <input type="text" class="field meeting-attendees-input" value="${escapeHtml(m.attendees)}" placeholder="Attendees">
+        <button class="btn btn-ghost btn-sm meeting-del" title="Remove">\u2715</button>
+      </div>
+      <span class="meeting-field-label">Notes</span>
+      <textarea class="meeting-notes-input" placeholder="What was discussed...">${escapeHtml(m.notes)}</textarea>
+      <span class="meeting-field-label">Action items</span>
+      <textarea class="meeting-actions-input" placeholder="Follow-ups, who owns what...">${escapeHtml(m.actionItems)}</textarea>
+    </div>
+  `).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Production meeting notes</h3>
+        <button class="btn btn-gold btn-sm" id="addMeetingBtn">+ Log meeting</button>
+      </div>
+      ${data.meetings.length === 0 ? `<div class="empty"><span class="big">No meetings logged</span>Track production meeting notes and action items here.</div>` : cards}
+    </div>
+  `;
+}
+
+function wireMeetingEvents(){
+  const data = currentData();
+  document.getElementById('addMeetingBtn').onclick = () => {
+    data.meetings.push({ id: uid(), date: todayStr(), attendees:'', notes:'', actionItems:'' });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('.meeting-card').forEach(card => {
+    const id = card.dataset.id;
+    const m = data.meetings.find(x => x.id === id);
+    card.querySelector('.meeting-date-input').onchange = e => { m.date = e.target.value; persistShowData(state.activeShowId); renderMain(); };
+    card.querySelector('.meeting-attendees-input').onchange = e => { m.attendees = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.meeting-notes-input').onchange = e => { m.notes = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.meeting-actions-input').onchange = e => { m.actionItems = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.meeting-del').onclick = () => {
+      data.meetings = data.meetings.filter(x => x.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+function todayStr(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+function formatDate(iso){
+  if(!iso) return 'No date';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
+}
+
+// ---------------- CAST ----------------
+function castTemplate(){
+  const data = currentData();
+  const rows = data.castMembers.map(c => `
+    <tr data-id="${c.id}">
+      <td><input type="text" class="field cast-role" value="${escapeHtml(c.role)}" placeholder="Role"></td>
+      <td><input type="text" class="field cast-actor" value="${escapeHtml(c.actor)}" placeholder="Actor"></td>
+      <td><input type="text" class="field cast-notes" value="${escapeHtml(c.notes)}" placeholder="Notes"></td>
+      <td><button class="btn btn-ghost btn-sm cast-del" title="Remove">\u2715</button></td>
+    </tr>
+  `).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Cast</h3>
+        <button class="btn btn-gold btn-sm" id="addCastBtn">+ Add role</button>
+      </div>
+      ${data.castMembers.length === 0 ? `<div class="empty"><span class="big">No cast listed</span>Add roles and actors for this show.</div>` : `
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Role</th><th>Actor</th><th>Notes</th><th></th></tr></thead>
+        <tbody id="castRows">${rows}</tbody>
+      </table>
+      </div>`}
+    </div>
+  `;
+}
+
+function wireCastEvents(){
+  const data = currentData();
+  document.getElementById('addCastBtn').onclick = () => {
+    data.castMembers.push({ id: uid(), role:'', actor:'', notes:'' });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('#castRows tr').forEach(row => {
+    const id = row.dataset.id;
+    const c = data.castMembers.find(x => x.id === id);
+    row.querySelector('.cast-role').onchange = e => { c.role = e.target.value; persistShowData(state.activeShowId); };
+    row.querySelector('.cast-actor').onchange = e => { c.actor = e.target.value; persistShowData(state.activeShowId); };
+    row.querySelector('.cast-notes').onchange = e => { c.notes = e.target.value; persistShowData(state.activeShowId); };
+    row.querySelector('.cast-del').onclick = () => {
+      data.castMembers = data.castMembers.filter(x => x.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+function cueIsFlagged(c){
+  return /copyright|permission|ask director/i.test(c.notes || '');
+}
+
+function cuesTemplate(){
+  const data = currentData();
+  const flaggedCount = data.cues.filter(cueIsFlagged).length;
+
+  const decisions = data.cues.filter(c => /ask director/i.test(c.notes || ''));
+  const decisionRows = decisions.map(c => `
+    <div class="todo-row decision">
+      <span class="flag-dot"></span>
+      <div>
+        <div class="todo-label">${escapeHtml(c.num)} \u2014 ${escapeHtml(c.label)}</div>
+        <div class="sched-note">${escapeHtml(c.notes)}</div>
+      </div>
+      <div></div>
+    </div>
+  `).join('');
+  const decisionsPanel = decisions.length ? `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Open decisions</h3>
+        <span class="hint">${decisions.length} awaiting director input</span>
+      </div>
+      <div>${decisionRows}</div>
+    </div>` : '';
+
+  const rows = data.cues.map(c => `
+    <tr data-id="${c.id}" class="${cueIsFlagged(c) ? 'flag-row' : ''}">
+      <td><input type="text" class="field cue-num" value="${escapeHtml(c.num)}" style="width:52px" placeholder="Q1"></td>
+      <td style="width:78px"><input type="text" class="field cue-scene" value="${escapeHtml(c.sceneAct)}" placeholder="I.iii"></td>
+      <td><textarea class="field cue-label" rows="2" placeholder="Description">${escapeHtml(c.label)}</textarea></td>
+      <td><textarea class="field cue-trigger" rows="2" placeholder="Trigger / QLab note">${escapeHtml(c.trigger)}</textarea></td>
+      <td>${cueIsFlagged(c) ? '<span class="flag-dot" title="Needs rights clearance or director input"></span>' : ''}<textarea class="field cue-notes" rows="2" placeholder="Notes, candidate files, flags">${escapeHtml(c.notes)}</textarea></td>
+      <td style="width:118px">
+        <select class="field cue-status">
+          ${['Draft','Programmed','Confirmed'].map(s => `<option ${c.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td><button class="btn btn-ghost btn-sm cue-del" title="Delete cue">\u2715</button></td>
+    </tr>
+  `).join('');
+
+  return `
+    ${decisionsPanel}
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Cue list</h3>
+        <button class="btn btn-gold btn-sm" id="addCueBtn">+ Add cue</button>
+      </div>
+      ${flaggedCount > 0 ? `<div class="panel-head" style="margin-top:-4px;"><span class="hint"><span class="flag-dot"></span>${flaggedCount} cue${flaggedCount===1?'':'s'} need rights clearance or a director decision</span></div>` : ''}
+      ${data.cues.length === 0 ? `<div class="empty"><span class="big">No cues yet</span>Add your first cue to start building the list.</div>` : `
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Cue</th><th>Scene</th><th>Description</th><th>Trigger</th><th>Notes</th><th>Status</th><th></th></tr></thead>
+        <tbody id="cueRows">${rows}</tbody>
+      </table>
+      </div>`}
+    </div>
+  `;
+}
+
+function wireCueEvents(){
+  const data = currentData();
+  document.getElementById('addCueBtn').onclick = () => {
+    data.cues.push({ id: uid(), num: `Q${data.cues.length+1}`, label:'', sceneAct:'', trigger:'', notes:'', status:'Draft' });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('#cueRows textarea.field').forEach(autoGrow);
+  document.querySelectorAll('#cueRows tr').forEach(row => {
+    const id = row.dataset.id;
+    const cue = data.cues.find(c => c.id === id);
+    row.querySelector('.cue-num').onchange = e => { cue.num = e.target.value; persistShowData(state.activeShowId); };
+    const labelEl = row.querySelector('.cue-label');
+    labelEl.oninput = () => autoGrow(labelEl);
+    labelEl.onchange = e => { cue.label = e.target.value; persistShowData(state.activeShowId); };
+    row.querySelector('.cue-scene').onchange = e => { cue.sceneAct = e.target.value; persistShowData(state.activeShowId); };
+    const triggerEl = row.querySelector('.cue-trigger');
+    triggerEl.oninput = () => autoGrow(triggerEl);
+    triggerEl.onchange = e => { cue.trigger = e.target.value; persistShowData(state.activeShowId); };
+    const notesEl = row.querySelector('.cue-notes');
+    notesEl.oninput = () => autoGrow(notesEl);
+    notesEl.onchange = e => { cue.notes = e.target.value; persistShowData(state.activeShowId); renderMain(); };
+    row.querySelector('.cue-status').onchange = e => { cue.status = e.target.value; persistShowData(state.activeShowId); };
+    row.querySelector('.cue-del').onclick = () => {
+      data.cues = data.cues.filter(c => c.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+
+// ---------------- SCHEDULE ----------------
+function scheduleTemplate(){
+  const data = currentData();
+  const today = todayStr();
+  const sorted = [...data.schedule].sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  const rows = sorted.map(item => `
+    <div class="sched-row ${item.done ? 'done' : ''}" data-id="${item.id}">
+      <div>
+        <input type="date" class="field sched-date-input" value="${escapeHtml(item.date)}" style="${!item.done && item.date && item.date < today ? 'border-color:var(--standby); color:var(--standby);' : ''}">
+      </div>
+      <div class="sched-fields">
+        <input type="text" class="field sched-label-input" value="${escapeHtml(item.label)}" placeholder="Milestone">
+        <input type="text" class="field sched-note-input" value="${escapeHtml(item.note)}" placeholder="Notes (optional)">
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; padding-top:6px;">
+        <input type="checkbox" class="check sched-done" ${item.done ? 'checked' : ''} title="Mark done">
+        <button class="btn btn-ghost btn-sm sched-del">\u2715</button>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Schedule &amp; deadlines</h3>
+        <button class="btn btn-gold btn-sm" id="addSchedBtn">+ Add date</button>
+      </div>
+      ${data.schedule.length === 0 ? `<div class="empty"><span class="big">Nothing scheduled</span>Add tech dates, deliverable deadlines, or rehearsal calls you need to track.</div>` : `<div>${rows}</div>`}
+    </div>
+  `;
+}
+
+function wireScheduleEvents(){
+  const data = currentData();
+  document.getElementById('addSchedBtn').onclick = () => {
+    data.schedule.push({ id: uid(), date: '', label: '', note: '', done: false });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('.sched-row').forEach(row => {
+    const id = row.dataset.id;
+    const item = data.schedule.find(s => s.id === id);
+    row.querySelector('.sched-date-input').onchange = e => { item.date = e.target.value; persistShowData(state.activeShowId); renderMain(); };
+    row.querySelector('.sched-label-input').onchange = e => { item.label = e.target.value; persistShowData(state.activeShowId); };
+    row.querySelector('.sched-note-input').onchange = e => { item.note = e.target.value; persistShowData(state.activeShowId); };
+    row.querySelector('.sched-done').onchange = e => { item.done = e.target.checked; persistShowData(state.activeShowId); renderMain(); };
+    row.querySelector('.sched-del').onclick = () => {
+      data.schedule = data.schedule.filter(s => s.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+
+// ---------------- FILES ----------------
+function filesTemplate(){
+  const data = currentData();
+  const rows = data.files.map(f => `
+    <div class="contact-card" data-id="${f.id}">
+      <button class="btn btn-ghost btn-sm file-del" title="Remove">\u2715</button>
+      <input type="text" class="file-name-input" value="${escapeHtml(f.name)}" placeholder="File name / label" style="font-weight:600;">
+      <input type="text" class="file-type-input" value="${escapeHtml(f.type)}" placeholder="Type (SFX / MUS / AMB)">
+      <input type="text" class="file-cue-input" value="${escapeHtml(f.cueRef)}" placeholder="Cue #(s) e.g. S-1, S-2">
+      <input type="text" class="file-url-input" value="${escapeHtml(f.url)}" placeholder="Link or file path">
+      <input type="text" class="file-notes-input" value="${escapeHtml(f.notes)}" placeholder="Notes">
+    </div>
+  `).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Sound files</h3>
+        <button class="btn btn-gold btn-sm" id="addFileBtn">+ Add file / link</button>
+      </div>
+      <div class="hint" style="margin:-4px 0 12px;">Drop links to shared drives, Dropbox, or file names from your library \u2014 not an upload, just a reference list tied back to cues.</div>
+      ${data.files.length === 0 ? `<div class="empty"><span class="big">No files logged</span>Add candidate SFX, music, or ambience files and link them to cue numbers.</div>` : `<div class="contact-grid">${rows}</div>`}
+    </div>
+  `;
+}
+
+function wireFileEvents(){
+  const data = currentData();
+  document.getElementById('addFileBtn').onclick = () => {
+    data.files.push({ id: uid(), name:'', type:'', cueRef:'', url:'', notes:'' });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('#tabContent .contact-card').forEach(card => {
+    const id = card.dataset.id;
+    const f = data.files.find(x => x.id === id);
+    if(!f) return;
+    card.querySelector('.file-name-input').onchange = e => { f.name = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.file-type-input').onchange = e => { f.type = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.file-cue-input').onchange = e => { f.cueRef = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.file-url-input').onchange = e => { f.url = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.file-notes-input').onchange = e => { f.notes = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.file-del').onclick = () => {
+      data.files = data.files.filter(x => x.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+
+// ---------------- CONTACTS ----------------
+function contactsTemplate(){
+  const data = currentData();
+  const cards = data.contacts.map(c => `
+    <div class="contact-card" data-id="${c.id}">
+      <button class="btn btn-ghost btn-sm contact-del" title="Remove">\u2715</button>
+      <input type="text" class="contact-name-input" value="${escapeHtml(c.name)}" placeholder="Name" style="font-weight:600;">
+      <input type="text" class="contact-role-input" value="${escapeHtml(c.role)}" placeholder="Role">
+      <input type="text" class="contact-phone-input" value="${escapeHtml(c.phone)}" placeholder="Phone">
+      <input type="text" class="contact-email-input" value="${escapeHtml(c.email)}" placeholder="Email">
+      <input type="text" class="contact-notes-input" value="${escapeHtml(c.notes)}" placeholder="Notes (office, dept.)">
+    </div>
+  `).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Contacts</h3>
+        <button class="btn btn-gold btn-sm" id="addContactBtn">+ Add contact</button>
+      </div>
+      ${data.contacts.length === 0 ? `<div class="empty"><span class="big">No contacts yet</span>Add the production team you'll need to reach.</div>` : `<div class="contact-grid">${cards}</div>`}
+    </div>
+  `;
+}
+
+function wireContactEvents(){
+  const data = currentData();
+  document.getElementById('addContactBtn').onclick = () => {
+    data.contacts.push({ id: uid(), name:'', role:'', phone:'', email:'', notes:'' });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('.contact-card').forEach(card => {
+    const id = card.dataset.id;
+    const c = data.contacts.find(x => x.id === id);
+    card.querySelector('.contact-name-input').onchange = e => { c.name = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.contact-role-input').onchange = e => { c.role = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.contact-phone-input').onchange = e => { c.phone = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.contact-email-input').onchange = e => { c.email = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.contact-notes-input').onchange = e => { c.notes = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.contact-del').onclick = () => {
+      data.contacts = data.contacts.filter(x => x.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+
+// ---------------- NOTES ----------------
+function notesTemplate(){
+  const data = currentData();
+  const cards = data.notes.map(n => `
+    <div class="note-card" data-id="${n.id}">
+      <div class="row-top">
+        <input type="text" class="note-scene note-scene-input" value="${escapeHtml(n.scene)}" placeholder="Scene / Act">
+        <button class="btn btn-ghost btn-sm note-del">\u2715</button>
+      </div>
+      <textarea class="note-text-input" placeholder="Notes...">${escapeHtml(n.text)}</textarea>
+    </div>
+  `).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Scene &amp; script notes</h3>
+        <button class="btn btn-gold btn-sm" id="addNoteBtn">+ Add note</button>
+      </div>
+      ${data.notes.length === 0 ? `<div class="empty"><span class="big">No notes yet</span>Track sound-relevant beats, script references, or design ideas by scene.</div>` : cards}
+    </div>
+  `;
+}
+
+function wireNoteEvents(){
+  const data = currentData();
+  document.getElementById('addNoteBtn').onclick = () => {
+    data.notes.push({ id: uid(), scene:'', text:'' });
+    persistShowData(state.activeShowId);
+    renderMain();
+  };
+  document.querySelectorAll('.note-card').forEach(card => {
+    const id = card.dataset.id;
+    const n = data.notes.find(x => x.id === id);
+    card.querySelector('.note-scene-input').onchange = e => { n.scene = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.note-text-input').onchange = e => { n.text = e.target.value; persistShowData(state.activeShowId); };
+    card.querySelector('.note-del').onclick = () => {
+      data.notes = data.notes.filter(x => x.id !== id);
+      persistShowData(state.activeShowId);
+      renderMain();
+    };
+  });
+}
+
+// ---------------- BEST PRACTICES ----------------
+function getTechStartDate(data){
+  const techItems = data.schedule.filter(s => /^tech\b/i.test((s.label||'').trim()) && s.date);
+  if(!techItems.length) return null;
+  return techItems.map(s => s.date).sort()[0];
+}
+
+function addDaysToISO(iso, days){
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+
+function bestPracticesTemplate(){
+  const data = currentData();
+  const techStart = getTechStartDate(data);
+
+  const milestones = [
+    { weeksBefore: 9, title: 'Concept meeting with the director', body: 'Sit down with the director early to align on tone, era, and the overall sonic world of the show \u2014 before you\u2019ve sourced or committed to anything. This is where you find out if the director is picturing something stylized and theatrical or something naturalistic, so you\u2019re not designing in the wrong direction for weeks.' },
+    { weeksBefore: 5, title: 'Share a draft cue list and reference tracks', body: 'Send the director a rough pass \u2014 candidate music, SFX ideas, and a first cut of the cue list \u2014 the same way you did with the music review document. This is the single most important cushion point: if the director wants a different piece of music, a different tone, or has a rights concern, you still have weeks to pivot instead of days.' },
+    { weeksBefore: 3, title: 'Incorporate director feedback', body: 'Lock in any swaps, re-recordings, or re-licensing this round of notes requires. Anything raised at the 5-week mark should be resolved by now, so nothing new is still in flux heading into the final stretch.' },
+    { weeksBefore: 1, title: 'Final cues locked & sent to the stage manager', body: 'Cue list and files are final \u2014 no more open creative questions. This is what feeds the SM\u2019s prompt book and is the version everyone builds tech around.' },
+  ];
+
+  const rows = milestones.map(m => {
+    const suggested = techStart ? addDaysToISO(techStart, -m.weeksBefore * 7) : null;
+    return `
+    <div class="bp-item">
+      <div class="bp-dot"></div>
+      <div class="bp-content">
+        <div class="bp-head">
+          <span class="bp-lead">${m.weeksBefore} week${m.weeksBefore === 1 ? '' : 's'} before tech</span>
+          ${suggested ? `<span class="bp-date">${formatDate(suggested)}</span>` : ''}
+        </div>
+        <div class="bp-title">${escapeHtml(m.title)}</div>
+        <div class="bp-body">${escapeHtml(m.body)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const techRow = `
+    <div class="bp-item bp-tech">
+      <div class="bp-dot"></div>
+      <div class="bp-content">
+        <div class="bp-head">
+          <span class="bp-lead">Tech week begins</span>
+          ${techStart ? `<span class="bp-date">${formatDate(techStart)}</span>` : ''}
+        </div>
+        <div class="bp-title">Refinement only from here on</div>
+        <div class="bp-body">Once tech starts, you're plugging in and balancing what's already been decided \u2014 not introducing new creative choices. Any cue that's still an open question by this point (see the flagged items on your Cues tab) becomes a live-fire problem instead of a planning one.</div>
+      </div>
+    </div>`;
+
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Best-practice timeline for sound design</h3>
+        ${techStart ? `<span class="hint">Calculated from this show\u2019s earliest "Tech" date on the Schedule tab</span>` : `<span class="hint">Add a schedule item starting with "Tech" to calculate suggested dates</span>`}
+      </div>
+      <div class="hint" style="margin:-4px 0 14px;">General guidance, not specific to this script \u2014 the core principle is simple: the further from tech you get the director listening to actual candidate music and reacting to a draft cue list, the more room you have to fix anything they push back on. Waiting until paper tech to get director input leaves no cushion at all.</div>
+      ${rows}
+      ${techRow}
+    </div>
+  `;
+}
+
+function wireTabEvents(){
+  if(state.activeTab === 'cast') wireCastEvents();
+  if(state.activeTab === 'script') wireScriptEvents();
+  if(state.activeTab === 'cues') wireCueEvents();
+  if(state.activeTab === 'schedule') wireScheduleEvents();
+  if(state.activeTab === 'files') wireFileEvents();
+  if(state.activeTab === 'meetings') wireMeetingEvents();
+  if(state.activeTab === 'contacts') wireContactEvents();
+  if(state.activeTab === 'notes') wireNoteEvents();
+}
+
+// ---------------- Show modals ----------------
+function openNewShowModal(){
+  showModal({
+    title: 'New show',
+    values: { title:'', subtitle:'', venue:'', dates:'', color: SHOW_COLORS[state.shows.length % SHOW_COLORS.length] },
+    onSave: (vals) => {
+      const id = uid();
+      state.shows.push({ id, ...vals });
+      state.data[id] = blankShowData();
+      state.activeShowId = id;
+      state.activeTab = 'cues';
+      persistShows();
+      persistShowData(id);
+      render();
+    }
+  });
+}
+
+function openEditShowModal(show){
+  showModal({
+    title: 'Edit show',
+    values: { title: show.title, subtitle: show.subtitle||'', venue: show.venue||'', dates: show.dates||'', color: show.color },
+    onSave: (vals) => {
+      Object.assign(show, vals);
+      persistShows();
+      render();
+    }
+  });
+}
+
+function showModal({title, values, onSave}){
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>${escapeHtml(title)}</h3>
+      <label>Show title</label>
+      <input type="text" id="m-title" value="${escapeHtml(values.title)}" placeholder="e.g. Antigone">
+      <label>Writer / director credit</label>
+      <input type="text" id="m-subtitle" value="${escapeHtml(values.subtitle)}" placeholder="e.g. Sophocles \u2014 dir. Eric Harrell">
+      <label>Venue</label>
+      <input type="text" id="m-venue" value="${escapeHtml(values.venue)}" placeholder="e.g. Studio Theatre">
+      <label>Run dates</label>
+      <input type="text" id="m-dates" value="${escapeHtml(values.dates)}" placeholder="e.g. Feb 12\u201314 &amp; 19\u201321">
+      <label>Color tag</label>
+      <div class="swatches" id="m-swatches">
+        ${SHOW_COLORS.map(c => `<span class="swatch ${c===values.color?'selected':''}" data-color="${c}" style="background:${c}"></span>`).join('')}
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="m-cancel">Cancel</button>
+        <button class="btn btn-gold" id="m-save">Save</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  let selectedColor = values.color;
+  overlay.querySelectorAll('.swatch').forEach(sw => {
+    sw.onclick = () => {
+      overlay.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+      selectedColor = sw.dataset.color;
+    };
+  });
+  overlay.querySelector('#m-cancel').onclick = () => overlay.remove();
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+  overlay.querySelector('#m-save').onclick = () => {
+    const titleVal = overlay.querySelector('#m-title').value.trim();
+    if(!titleVal){ overlay.querySelector('#m-title').focus(); return; }
+    onSave({
+      title: titleVal,
+      subtitle: overlay.querySelector('#m-subtitle').value.trim(),
+      venue: overlay.querySelector('#m-venue').value.trim(),
+      dates: overlay.querySelector('#m-dates').value.trim(),
+      color: selectedColor
+    });
+    overlay.remove();
+  };
+}
+
+function deleteShow(id){
+  if(!confirm('Delete this show and all its data? This cannot be undone.')) return;
+  state.shows = state.shows.filter(s => s.id !== id);
+  delete state.data[id];
+  state.activeShowId = state.shows[0]?.id || null;
+  persistShows();
+  try{ window.storage.delete(showDataKey(id)); }catch(e){}
+  render();
+}
+// loadAll() is now triggered by the Firebase auth state listener earlier
+// in the page, once a user successfully signs in with Google.
+</script>
+</body>
+</html>
