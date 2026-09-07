@@ -498,12 +498,12 @@
 // ===== FIREBASE CONFIG =====
 // Paste the config object from Firebase Console → Project Settings → Your apps → Web app.
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyANAkumBGom9lo1M6IIPQ0kEw8wM7IVycI",
-  authDomain: "theatre-hub.firebaseapp.com",
-  projectId: "theatre-hub",
-  storageBucket: "theatre-hub.firebasestorage.app",
-  messagingSenderId: "828829539093",
-  appId: "1:828829539093:web:3ea817c20eecc20749e71c",
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT_ID",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID",
 };
 
 firebase.initializeApp(FIREBASE_CONFIG);
@@ -609,69 +609,6 @@ function seedShowData(){
       { id: uid(), role:'Waiter 2 / Station Porter 2', actor:'TBA', notes:'' },
       { id: uid(), role:'Daisy Armstrong (Child V.O.)', actor:'TBA', notes:'' },
     ],
-    cues: [
-      { id: uid(), num:'S-1', sceneAct:'I-1', label:'SFX: Train approaching / roaring toward audience', trigger:'Start in darkness; build quietly to full roar', notes:'Opening image; highlighted train coming toward us. Candidate files: MOE_SFX_Train_Pass_By.wav + MOE_SFX_Train_Whistle.wav', status:'Draft' },
-      { id: uid(), num:'S-2', sceneAct:'I-1', label:'SFX: Train passes with whistle and roar', trigger:"Crossfade from girl's scream into train whistle; fast pass-by", notes:'Candidate files: MOE_SFX_Train_Pass_By.wav + MOE_SFX_Train_Whistle.wav', status:'Draft' },
-      { id: uid(), num:'S-3', sceneAct:'I-1', label:'SFX: Steam release / billowing train steam', trigger:'Auto-follow after pass-by', notes:'Coordinate with practical/theatrical steam', status:'Draft' },
-      { id: uid(), num:'S-4', sceneAct:'I-1', label:'MUS: Middle Eastern music', trigger:'Fade under Poirot narration', notes:'Istanbul transition', status:'Draft' },
-      { id: uid(), num:'S-5', sceneAct:'I-2', label:'* MUS: "I Want to Go Back to Michigan" - small hotel band', trigger:'Loop/underscore as scene opens; fade as needed', notes:'Public domain \u2014 no clearance needed; note says Krista', status:'Draft' },
-      { id: uid(), num:'S-6', sceneAct:'I-2 to I-3', label:'MUS: Mahler Symphony No. 1 - "Vorw\u00e4rts Dr\u00e4ngend" passage', trigger:'Scene transition; strong build into station', notes:'', status:'Draft' },
-      { id: uid(), num:'S-7', sceneAct:'I-3', label:'AMB: Istanbul train-station platform - steam, crowd activity, distant bells/whistles', trigger:'Establish before announcement; continue softly', notes:'Candidate file: MOE_AMB_Train_Station_Crowd_Announcement.wav', status:'Draft' },
-      { id: uid(), num:'S-8', sceneAct:'I-3', label:'SFX: Train bell / "All aboard" departure signal', trigger:'Trigger on Conductor: "All aboard!"', notes:'', status:'Draft' },
-      { id: uid(), num:'S-9', sceneAct:'I-3', label:'SFX: Train hoot, bells, steam and platform departure activity', trigger:'Build into transition', notes:'', status:'Draft' },
-      { id: uid(), num:'S-10', sceneAct:'I-3 to I-4', label:'MUS: Mahler Symphony No. 1 - fourth movement', trigger:'Transition into dining car; majestic entrance', notes:'', status:'Draft' },
-      { id: uid(), num:'S-11', sceneAct:'I-4', label:'SFX: Train start-up - kerchunk, lurch, rolling wheels, clangs and horn', trigger:'Layered start; accelerate with lighting/movement', notes:'', status:'Draft' },
-      { id: uid(), num:'S-12', sceneAct:'I-4', label:'MUS: "Flight of the Bumblebee" opening', trigger:'Start simultaneously with train movement', notes:'', status:'Draft' },
-      { id: uid(), num:'S-13', sceneAct:'I-5', label:'AMB (?): Interior of moving train', trigger:'Continuous low-level carriage/rail bed', notes:'Ask director whether continuous interior ambience is wanted. Candidate file: MOE_AMB_Interior_Moving_Train.wav', status:'Draft' },
-      { id: uid(), num:'S-14', sceneAct:'I-5', label:'SFX: Radio turns on / period radio sound', trigger:'Source from Hubbard compartment', notes:'Resolved: actress sings live over pre-recorded music track (same approach used previously). Candidate file: MOE_SFX_Radio_Click.wav', status:'Draft' },
-      { id: uid(), num:'S-15', sceneAct:'I-5', label:'* MUS: "Charleston"', trigger:'Source/radio-style treatment; under Hubbard singing', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
-      { id: uid(), num:'S-16', sceneAct:'I-5 to I-6', label:'AMB: Wind howling / worsening snowstorm', trigger:'Build during transition', notes:'Candidate file: MOE_AMB_Blizzard_Wind.wav', status:'Draft' },
-      { id: uid(), num:'S-17', sceneAct:'I-5 to I-6', label:'SFX: Train rush-by - zoom, horn and metallic clangs', trigger:'Punctuate transition', notes:'', status:'Draft' },
-      { id: uid(), num:'S-18', sceneAct:'I-6', label:'SFX: Radio tuning screech and static', trigger:'Tuning sweep into crackling signal', notes:'Candidate files: MOE_SFX_Radio_Click.wav + MOE_SFX_Old_Radio_Transmission.wav', status:'Draft' },
-      { id: uid(), num:'S-19', sceneAct:'I-6', label:'AMB: Interior moving train under radio transmission', trigger:'Low loop beneath dialogue/static', notes:'Candidate file: MOE_AMB_Interior_Moving_Train.wav', status:'Draft' },
-      { id: uid(), num:'S-20', sceneAct:'I-7', label:'SFX: Interior train decelerates and stops', trigger:'Slow rail rhythm, braking/settling stop', notes:'Candidate file: MOE_AMB_Interior_Moving_Train.wav; program fade to stop', status:'Draft' },
-      { id: uid(), num:'S-21', sceneAct:'I-8 to I-9', label:'MUS: Rossini, La Gazza Ladra overture - approx. 2 minutes in', trigger:'Immediate transition to morning', notes:'Candidate file: MOE_AMB_Blizzard_Wind.wav; use filtered/inside perspective if needed', status:'Draft' },
-      { id: uid(), num:'S-22', sceneAct:'I-9', label:'AMB: Wind howling through open compartment window', trigger:'Fade up when room is opened', notes:'', status:'Draft' },
-      { id: uid(), num:'S-23', sceneAct:'I-9', label:"AMB: Horror / terror sting at body reveal", trigger:"Sharp sting into Greta's scream", notes:'', status:'Draft' },
-      { id: uid(), num:'S-24', sceneAct:'I-9 to I-10', label:'MUS: Rossini, La Gazza Ladra - discordant passage', trigger:'Blackout transition', notes:'', status:'Draft' },
-      { id: uid(), num:'S-25', sceneAct:'I-10', label:'SFX: Offstage scream followed by gunshot', trigger:"Scream first, then gunshot; motivated from Ratchett's room", notes:'', status:'Draft' },
-      { id: uid(), num:'S-26', sceneAct:'I-10', label:'SFX (?): Screech of sound into blackout', trigger:'Short transition sting', notes:'Ask director if this cue is needed', status:'Draft' },
-      { id: uid(), num:'S-27', sceneAct:'II-1', label:'AMB + * MUS: Discordant opening bars of Mahler Symphony No. 5, "St\u00fcrmisch Bewegt"', trigger:'Blast at Act II opening', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
-      { id: uid(), num:'S-28', sceneAct:'II-3 to II-4', label:'* MUS: Bach Cello Suite No. 2 in D minor - first movement (Pr\u00e9lude)', trigger:'Agonized solo cello; fade with lights', notes:'Candidate files: MOE_SFX_Radio_Click.wav + MOE_SFX_Old_Radio_Transmission.wav', status:'Draft' },
-      { id: uid(), num:'S-29', sceneAct:'II-4', label:'SFX: Radio static / crackle', trigger:'Radio-transmitter source', notes:'', status:'Draft' },
-      { id: uid(), num:'S-30', sceneAct:'II-4 to II-5', label:'* MUS: Haydn String Quartet in D minor, Op. 76 No. 2 - Allegro', trigger:'Crossfade into next scene', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
-      { id: uid(), num:'S-31', sceneAct:'II-5', label:'AMB: Flashback transition sting', trigger:'Bang into blue-light flashback', notes:'', status:'Draft' },
-      { id: uid(), num:'S-32', sceneAct:'II-5', label:'AMB: Terror sting during flashback body discovery', trigger:'Replay the body-reveal terror sound', notes:'', status:'Draft' },
-      { id: uid(), num:'S-33', sceneAct:'II-5', label:'SFX: Distant gunshot replay', trigger:'Two highlighted gunshot beats; reuse same file', notes:'', status:'Draft' },
-      { id: uid(), num:'S-34', sceneAct:'II-5', label:'SFX: Gunshot replay - reveal sequence', trigger:"Trigger after Mary's flashback scream", notes:'', status:'Draft' },
-      { id: uid(), num:'S-35', sceneAct:'II-5', label:'* MUS: "Alexander\'s Ragtime Band"', trigger:'Hubbard flashback/source performance', notes:'Public domain \u2014 no clearance needed', status:'Draft' },
-      { id: uid(), num:'S-36', sceneAct:'II-5', label:'AMB (?): Murder-memory sequence - repeated screeches of terror', trigger:'Layer under/around eight stabbing actions', notes:'Ask director if the repeated terror sequence is desired', status:'Draft' },
-      { id: uid(), num:'S-37', sceneAct:'II-5 / Finale', label:'SFX: Train begins moving - kerchunk, rolling wheels, chug, whistle and bells', trigger:'Build through final tableau; continue under closing speech', notes:'Candidate files: MOE_AMB_Interior_Moving_Train.wav + MOE_SFX_Train_Whistle.wav + MOE_SFX_Train_Pass_By.wav', status:'Draft' },
-    ],
-    schedule: [
-      { id: uid(), date: '2026-08-17', label: 'Rehearsals begin (read-thru)', note: '', done: false },
-      { id: uid(), date: '2026-08-21', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
-      { id: uid(), date: '2026-08-28', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
-      { id: uid(), date: '2026-09-04', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
-      { id: uid(), date: '2026-09-07', label: 'Start gathering sound cues', note: '', done: false },
-      { id: uid(), date: '2026-09-11', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
-      { id: uid(), date: '2026-09-16', label: 'Cue lists due to SM', note: '', done: false },
-      { id: uid(), date: '2026-09-18', label: 'Production meeting', note: '10:00\u201311:00 AM', done: false },
-      { id: uid(), date: '2026-09-18', label: 'Paper tech', note: 'On or before this date', done: false },
-      { id: uid(), date: '2026-09-21', label: 'Light focus', note: '', done: false },
-      { id: uid(), date: '2026-09-22', label: 'Light cueing', note: '', done: false },
-      { id: uid(), date: '2026-09-23', label: 'Tech \u2014 Act I', note: 'Cast call 6:30pm', done: false },
-      { id: uid(), date: '2026-09-24', label: 'Tech \u2014 Act II', note: 'Cast call 6:30pm', done: false },
-      { id: uid(), date: '2026-09-25', label: 'Tech \u2014 full run, all tech', note: 'Cast call 6:30pm', done: false },
-      { id: uid(), date: '2026-09-28', label: 'Dress 1', note: '', done: false },
-      { id: uid(), date: '2026-09-29', label: 'Dress 2', note: '', done: false },
-      { id: uid(), date: '2026-09-30', label: 'Dress 3', note: '', done: false },
-      { id: uid(), date: '2026-10-01', label: 'Final Dress / IDR', note: '', done: false },
-      { id: uid(), date: '2026-10-02', label: 'Performance weekend 1 begins', note: 'Oct 2\u20134', done: false },
-      { id: uid(), date: '2026-10-08', label: 'Brush-up & photo call', note: '', done: false },
-      { id: uid(), date: '2026-10-09', label: 'Performance weekend 2 begins', note: 'Oct 9\u201311', done: false },
-      { id: uid(), date: '2026-10-11', label: 'Set strike', note: 'Follows final performance', done: false },
-    ],
     scriptScenes: [
       { id: uid(), tag:'I-1', label:'Act I, Scene 1', pages:'11-13', synopsis:'Prologue: a domestic bedtime scene is interrupted by an intruder, told entirely through sound and shadow. Transitions into Poirot addressing the audience directly.' },
       { id: uid(), tag:'I-2', label:'Act I, Scene 2', pages:'14-18', synopsis:'Tokatlian Hotel dining room, Istanbul. Poirot is introduced to Arbuthnot, Debenham, Hubbard, and MacQueen; reunites with old friend Bouc.' },
@@ -689,31 +626,6 @@ function seedShowData(){
       { id: uid(), tag:'II-4', label:'Act II, Scene 4', pages:'77', synopsis:'Bouc radios Zagreb Station directly, relaying the train\u2019s dire conditions.' },
       { id: uid(), tag:'II-5', label:'Act II, Scene 5', pages:'78-91', synopsis:'Poirot gathers all suspects, reveals two possible solutions to the murder, and the emotional resolution and epilogue follow.' },
     ],
-    meetings: [
-      { id: uid(), date: '2026-08-21', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
-      { id: uid(), date: '2026-08-28', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
-      { id: uid(), date: '2026-09-04', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
-      { id: uid(), date: '2026-09-11', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
-      { id: uid(), date: '2026-09-18', attendees: '', notes: '10:00\u201311:00 AM production meeting', actionItems: '' },
-    ],
-    files: [
-      { id: uid(), name:'MOE_SFX_Train_Pass_By.wav', type:'SFX', cueRef:'S-1, S-2, S-37', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
-      { id: uid(), name:'MOE_SFX_Train_Whistle.wav', type:'SFX', cueRef:'S-1, S-2, S-37', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
-      { id: uid(), name:'MOE_AMB_Train_Station_Crowd_Announcement.wav', type:'AMB', cueRef:'S-7', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
-      { id: uid(), name:'MOE_AMB_Interior_Moving_Train.wav', type:'AMB', cueRef:'S-13, S-19, S-20, S-37', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
-      { id: uid(), name:'MOE_SFX_Radio_Click.wav', type:'SFX', cueRef:'S-14, S-18, S-28', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
-      { id: uid(), name:'MOE_AMB_Blizzard_Wind.wav', type:'AMB', cueRef:'S-16, S-21', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
-      { id: uid(), name:'MOE_SFX_Old_Radio_Transmission.wav', type:'SFX', cueRef:'S-18, S-28', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'' },
-      { id: uid(), name:'I Want to Go Back to Michigan (Irving Berlin)', type:'MUS', cueRef:'S-5', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-      { id: uid(), name:'Mahler Symphony No. 1 \u2014 Vorw\u00e4rts Dr\u00e4ngend', type:'MUS', cueRef:'S-6', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-      { id: uid(), name:'Alexander\u2019s Ragtime Band (Irving Berlin)', type:'MUS', cueRef:'S-35', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-      { id: uid(), name:'The Charleston (James P. Johnson)', type:'MUS', cueRef:'S-15', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-      { id: uid(), name:'Rossini \u2014 Overture to La Gazza Ladra', type:'MUS', cueRef:'S-21', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-      { id: uid(), name:'Mahler Symphony No. 5 \u2014 St\u00fcrmisch Bewegt', type:'MUS', cueRef:'S-27', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-      { id: uid(), name:'Bach Cello Suite (D minor) \u2014 Pr\u00e9lude', type:'MUS', cueRef:'S-28', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain \u2014 script says Suite No. 2, cue sheet says No. 5; confirm which' },
-      { id: uid(), name:'Haydn String Quartet Op. 76 No. 2 \u2014 Allegro', type:'MUS', cueRef:'S-30', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-      { id: uid(), name:'Flight of the Bumblebee (Rimsky-Korsakov, arr. Rachmaninoff)', type:'MUS', cueRef:'S-12', url:'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing', notes:'Public domain' },
-    ],
     contacts: [
       { id: uid(), name: 'Eric Harrell', role: 'Department Chair', phone: '757-667-1358', email: '', notes: 'COM 246' },
       { id: uid(), name: 'Michael Kirkland', role: 'Director', phone: '757-617-7174', email: '', notes: 'COM 224' },
@@ -725,7 +637,6 @@ function seedShowData(){
       { id: uid(), name: 'Cyndi Woodward', role: 'Scenic Design', phone: '', email: '', notes: 'Guest designer' },
       { id: uid(), name: 'Bess Park', role: 'Lighting Design', phone: '', email: '', notes: 'Guest designer' },
     ],
-    notes: []
   };
 }
 
@@ -788,17 +699,9 @@ async function loadAll(){
     }
   }
 
-  // One-time migration: earlier sessions may have already persisted an empty
-  // meetings list before these dates were added to the seed. Inject them once.
-  const motoeData = state.data['motoe'];
-  if(motoeData && !motoeData.meetingsSeeded && motoeData.meetings.length === 0){
-    motoeData.meetings = seedShowData().meetings;
-    motoeData.meetingsSeeded = true;
-    persistShowData('motoe');
-  }
-
   // One-time migration: mirror the production meeting dates onto the Schedule
   // tab for sessions whose schedule was already saved before this was added.
+  const motoeData = state.data['motoe'];
   if(motoeData && !motoeData.scheduleMeetingsSeeded){
     const existingDates = new Set(motoeData.schedule.map(s => s.date + '|' + s.label));
     const meetingDates = ['2026-08-21','2026-08-28','2026-09-04','2026-09-11','2026-09-18'];
@@ -811,152 +714,27 @@ async function loadAll(){
     persistShowData('motoe');
   }
 
-  // One-time migration: backfill the Drive folder link on existing sound
-  // file entries and add the 9 music tracks, for sessions saved before this.
-  if(motoeData && !motoeData.filesDriveLinkSeeded){
-    const DRIVE_LINK = 'https://drive.google.com/drive/folders/1pwhSGbitW23qocOW3OsfO5LH7_VW9JYt?usp=sharing';
-    motoeData.files.forEach(f => { if(!f.url) f.url = DRIVE_LINK; });
-    const existingNames = new Set(motoeData.files.map(f => f.name));
-    const musicTracks = [
-      { name:'I Want to Go Back to Michigan (Irving Berlin)', type:'MUS', cueRef:'S-5', notes:'Public domain' },
-      { name:'Mahler Symphony No. 1 \u2014 Vorw\u00e4rts Dr\u00e4ngend', type:'MUS', cueRef:'S-6', notes:'Public domain' },
-      { name:'Alexander\u2019s Ragtime Band (Irving Berlin)', type:'MUS', cueRef:'S-35', notes:'Public domain' },
-      { name:'The Charleston (James P. Johnson)', type:'MUS', cueRef:'S-15', notes:'Public domain' },
-      { name:'Rossini \u2014 Overture to La Gazza Ladra', type:'MUS', cueRef:'S-21', notes:'Public domain' },
-      { name:'Mahler Symphony No. 5 \u2014 St\u00fcrmisch Bewegt', type:'MUS', cueRef:'S-27', notes:'Public domain' },
-      { name:'Bach Cello Suite No. 2 in D minor \u2014 Pr\u00e9lude', type:'MUS', cueRef:'S-28', notes:'Public domain \u2014 stored in "02 Song Audio Files" subfolder' },
-      { name:'Haydn String Quartet Op. 76 No. 2 \u2014 Allegro', type:'MUS', cueRef:'S-30', notes:'Public domain' },
-      { name:'Flight of the Bumblebee (Rimsky-Korsakov, arr. Rachmaninoff)', type:'MUS', cueRef:'S-12', notes:'Public domain' },
-    ];
-    musicTracks.forEach(t => {
-      if(!existingNames.has(t.name)){
-        motoeData.files.push({ id: uid(), name:t.name, type:t.type, cueRef:t.cueRef, url:DRIVE_LINK, notes:t.notes });
-      }
-    });
-    motoeData.filesDriveLinkSeeded = true;
-    persistShowData('motoe');
-  }
-
-  // One-time migration: correct Bach Cello Suite number (script confirms No. 2, not No. 5).
-  if(motoeData && !motoeData.bachSuiteFixed){
-    const s28 = motoeData.cues.find(c => c.num === 'S-28');
-    if(s28){ s28.label = '* MUS: Bach Cello Suite No. 2 in D minor - first movement (Pr\u00e9lude)'; }
-    const bachFile = motoeData.files.find(f => /Bach Cello Suite/i.test(f.name));
-    if(bachFile){
-      bachFile.name = 'Bach Cello Suite No. 2 in D minor \u2014 Pr\u00e9lude';
-      bachFile.notes = 'Public domain \u2014 stored in "02 Song Audio Files" subfolder';
+  // One-time migration: log the 8/28 production meeting's general notes onto
+  // its Schedule row. Cue-specific outcomes from that meeting (S-13 resolved,
+  // .22 caliber gunshots, the door SFX cues, the Daisy V.O. cue) now live in
+  // the Excel cue list/QLab build guide, not in this hub.
+  if(motoeData && !motoeData.aug28NotesInSchedule){
+    const row = motoeData.schedule.find(s => s.date === '2026-08-28' && s.label === 'Production meeting');
+    const note = 'Steam train interior sound wanted as an option. Gunshot SFX should be .22 caliber. Need door practicals for train door open/close between cars while moving. Need to schedule ADR for the little girl\u2019s voice (Daisy Armstrong V.O.). Dr. K gathering period pre-show/intermission/post-show music. (Cue-specific details tracked in the Excel cue list.)';
+    if(row){
+      row.note = row.note && row.note !== '10:00\u201311:00 AM' ? row.note + ' | ' + note : note;
+    } else {
+      motoeData.schedule.push({ id: uid(), date: '2026-08-28', label: 'Production meeting', note, done: false });
     }
-    motoeData.bachSuiteFixed = true;
-    persistShowData('motoe');
-  }
-
-  // One-time migration: S-14 director decision resolved (actress sings live over pre-recorded track).
-  if(motoeData && !motoeData.s14Resolved){
-    const s14 = motoeData.cues.find(c => c.num === 'S-14');
-    if(s14){
-      s14.label = 'SFX: Radio turns on / period radio sound';
-      s14.notes = 'Resolved: actress sings live over pre-recorded music track (same approach used previously). Candidate file: MOE_SFX_Radio_Click.wav';
-    }
-    motoeData.s14Resolved = true;
-    persistShowData('motoe');
-  }
-
-  // One-time migration: overwrite stale "Copyright needed" notes that were saved
-  // before these 5 cues were confirmed public domain.
-  if(motoeData && !motoeData.publicDomainNotesFixed){
-    const fixes = {
-      'S-5': 'Public domain \u2014 no clearance needed; note says Krista',
-      'S-15': 'Public domain \u2014 no clearance needed',
-      'S-27': 'Public domain \u2014 no clearance needed',
-      'S-30': 'Public domain \u2014 no clearance needed',
-      'S-35': 'Public domain \u2014 no clearance needed',
-    };
-    motoeData.cues.forEach(c => {
-      if(fixes[c.num] && /copyright|permission/i.test(c.notes || '')){
-        c.notes = fixes[c.num];
-      }
-    });
-    motoeData.publicDomainNotesFixed = true;
-    persistShowData('motoe');
-  }
-
-  // Log Aug 28 production meeting notes and cross-reference action items.
-  if(motoeData && !motoeData.aug28MeetingLogged){
-    motoeData.meetings.push({
-      id: uid(),
-      date: '2026-08-28',
-      attendees: '',
-      notes: 'Steam train interior sound wanted as an option. Gunshot SFX should be a .22 caliber shot. Need visual cues (door practicals) for the train door opening/closing while the train is moving. Need to schedule a recording session for the little girl\u2019s voice at the top of the show. Dr. K will gather period pre-show/intermission/post-show music.',
-      actionItems: 'Sound: source .22 caliber gunshot SFX. Sound: schedule ADR session for Daisy Armstrong (little girl V.O.). Sound/SM: coordinate train door practicals with lighting/stage management. Dr. K: gather period pre-show/intermission/post-show music.',
-    });
-
-    const s13 = motoeData.cues.find(c => c.num === 'S-13');
-    if(s13){ s13.notes = 'Resolved: director wants steam train interior sound available as an option (per 8/28 meeting).'; }
-
-    ['S-25','S-33','S-34'].forEach(num => {
-      const c = motoeData.cues.find(x => x.num === num);
-      if(c && !/\.22 caliber/i.test(c.notes || '')){
-        c.notes = (c.notes ? c.notes + ' ' : '') + 'Per 8/28 meeting: gunshot should be a .22 caliber shot.';
-      }
-    });
-
-    motoeData.cues.push({ id: uid(), num: `S-${motoeData.cues.length+1}`, sceneAct:'', label:'SFX: Train door opening and closing while moving', trigger:'', notes:'New from 8/28 production meeting \u2014 needs visual/practical coordination with SM and lighting, not sound alone.', status:'Draft' });
-
     motoeData.schedule.push({ id: uid(), date: '', label: 'Schedule ADR recording session \u2014 little girl (Daisy Armstrong V.O.)', note: 'From 8/28 production meeting', done: false });
-
-    motoeData.files.push({ id: uid(), name:'Period pre-show / intermission / post-show music', type:'MUS', cueRef:'', url:'', notes:'Dr. K gathering \u2014 from 8/28 production meeting' });
-
-    motoeData.aug28MeetingLogged = true;
-    persistShowData('motoe');
-  }
-
-  // Add the Daisy Armstrong V.O. recording as an actual cue, and expand the
-  // single generic door cue into specific candidate placements throughout
-  // the script wherever the train is still underway (per 8/28 follow-up).
-  if(motoeData && !motoeData.doorAndVoCuesAdded){
-    const existingLabels = new Set(motoeData.cues.map(c => c.label));
-
-    if(!existingLabels.has('V.O.: Daisy Armstrong (little girl) recorded dialogue \u2014 bedtime scene through final scream')){
-      motoeData.cues.push({
-        id: uid(), num:'S-1A', sceneAct:'I-1',
-        label:'V.O.: Daisy Armstrong (little girl) recorded dialogue \u2014 bedtime scene through final scream',
-        trigger:'Playback under/in place of a live child actor at the top of the show, between the train SFX cues (S-1 and S-2)',
-        notes:'Requires ADR recording session (see Schedule tab). Confirm mic/reverb treatment so the V.O. reads as being in the room rather than obviously pre-recorded.',
-        status:'Draft',
-      });
-    }
-
-    // Remove the earlier generic door placeholder cue in favor of specific placements.
-    motoeData.cues = motoeData.cues.filter(c => c.label !== 'SFX: Train door opening and closing while moving');
-
-    const doorTransitions = [
-      { tag:'I-4 to I-5', desc:'as characters move between train cars while the train is underway' },
-      { tag:'I-5 to I-6', desc:'car-to-car transition during the overnight sequence' },
-      { tag:'I-6 to I-7', desc:'Michel/corridor to the observation deck' },
-      { tag:'I-7 to I-8', desc:'Arbuthnot and Mary returning from the observation deck' },
-      { tag:'I-8 to I-9', desc:'final transition before the train stops in the snowdrift'},
-    ];
-    doorTransitions.forEach(t => {
-      const label = `SFX: Exterior train door open/close \u2014 ${t.tag}`;
-      if(!existingLabels.has(label)){
-        motoeData.cues.push({
-          id: uid(), num:`S-D-${t.tag.replace(/[^0-9IV]/gi,'')}`, sceneAct:t.tag,
-          label,
-          trigger:`Candidate placement, ${t.desc}`,
-          notes:'Proposed per 8/28 meeting \u2014 the published script does not call this out explicitly as a distinct cue; confirm exact staging/blocking and count of doors with director and SM before finalizing. Act II occurs after the train has stopped in the snowdrift, so no further placements are proposed there.',
-          status:'Draft',
-        });
-      }
-    });
-
-    motoeData.doorAndVoCuesAdded = true;
+    motoeData.aug28NotesInSchedule = true;
     persistShowData('motoe');
   }
   render();
 }
 
 function blankShowData(){
-  return { castMembers: [], scriptScenes: [], cues: [], schedule: [], files: [], meetings: [], contacts: [], notes: [] };
+  return { castMembers: [], scriptScenes: [], schedule: [], contacts: [] };
 }
 
 // ---------------- render root ----------------
@@ -1005,16 +783,13 @@ function renderMain(){
     </div>
     <div class="waveline" id="waveline"></div>
     <div class="tabs">
-      ${tabDef('schedule','Schedule')}
-      ${tabDef('cues','Cues')}
-      ${tabDef('files','Sound Files')}
+      ${tabDef('schedule','Schedule &amp; Notes')}
       ${tabDef('cast','Cast')}
       ${tabDef('script','Script')}
-      ${tabDef('notes','Notes')}
-      ${tabDef('meetings','Meeting Notes')}
       ${tabDef('contacts','Contacts')}
       ${tabDef('bestpractices','Best Practices')}
     </div>
+    <div class="hint" style="margin:6px 2px 0;">Sound cues now live in the shared Excel cue list (transferable to QLab and the SM); sound files live in the Google Drive folder. This hub stays focused on schedule, cast, script, and contacts.</div>
     <div id="tabContent"></div>
   `;
   buildWaveline();
@@ -1030,12 +805,8 @@ function renderMain(){
   const content = document.getElementById('tabContent');
   if(state.activeTab === 'cast') content.innerHTML = castTemplate();
   if(state.activeTab === 'script') content.innerHTML = scriptTemplate();
-  if(state.activeTab === 'cues') content.innerHTML = cuesTemplate();
   if(state.activeTab === 'schedule') content.innerHTML = scheduleTemplate();
-  if(state.activeTab === 'files') content.innerHTML = filesTemplate();
-  if(state.activeTab === 'meetings') content.innerHTML = meetingsTemplate();
   if(state.activeTab === 'contacts') content.innerHTML = contactsTemplate();
-  if(state.activeTab === 'notes') content.innerHTML = notesTemplate();
   if(state.activeTab === 'bestpractices') content.innerHTML = bestPracticesTemplate();
 
   wireTabEvents();
@@ -1070,7 +841,6 @@ function escapeHtml(str){
 function scriptTemplate(){
   const data = currentData();
   const rows = data.scriptScenes.map(s => {
-    const cues = data.cues.filter(c => c.sceneAct && c.sceneAct.includes(s.tag));
     return `
     <div class="scene-card" data-id="${s.id}">
       <div class="scene-head">
@@ -1079,9 +849,6 @@ function scriptTemplate(){
         <button class="btn btn-ghost btn-sm scene-del" title="Remove">\u2715</button>
       </div>
       <textarea class="field scene-synopsis-input" rows="2" placeholder="Synopsis (your own words \u2014 no script text)">${escapeHtml(s.synopsis)}</textarea>
-      <div class="scene-cues">
-        ${cues.length ? cues.map(c => `<span class="scene-cue-chip">${escapeHtml(c.num)}</span>`).join('') : `<span class="scene-cue-chip none">no cues tagged ${escapeHtml(s.tag)}</span>`}
-      </div>
     </div>`;
   }).join('');
 
@@ -1118,56 +885,6 @@ function wireScriptEvents(){
   });
 }
 
-// ---------------- MEETING NOTES ----------------
-function meetingsTemplate(){
-  const data = currentData();
-  const sorted = [...data.meetings].sort((a,b) => (a.date||'').localeCompare(b.date||''));
-  const cards = sorted.map(m => `
-    <div class="meeting-card" data-id="${m.id}">
-      <div class="meeting-head">
-        <input type="date" class="field meeting-date-input" value="${escapeHtml(m.date)}">
-        <input type="text" class="field meeting-attendees-input" value="${escapeHtml(m.attendees)}" placeholder="Attendees">
-        <button class="btn btn-ghost btn-sm meeting-del" title="Remove">\u2715</button>
-      </div>
-      <span class="meeting-field-label">Notes</span>
-      <textarea class="meeting-notes-input" placeholder="What was discussed...">${escapeHtml(m.notes)}</textarea>
-      <span class="meeting-field-label">Action items</span>
-      <textarea class="meeting-actions-input" placeholder="Follow-ups, who owns what...">${escapeHtml(m.actionItems)}</textarea>
-    </div>
-  `).join('');
-
-  return `
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Production meeting notes</h3>
-        <button class="btn btn-gold btn-sm" id="addMeetingBtn">+ Log meeting</button>
-      </div>
-      ${data.meetings.length === 0 ? `<div class="empty"><span class="big">No meetings logged</span>Track production meeting notes and action items here.</div>` : cards}
-    </div>
-  `;
-}
-
-function wireMeetingEvents(){
-  const data = currentData();
-  document.getElementById('addMeetingBtn').onclick = () => {
-    data.meetings.push({ id: uid(), date: todayStr(), attendees:'', notes:'', actionItems:'' });
-    persistShowData(state.activeShowId);
-    renderMain();
-  };
-  document.querySelectorAll('.meeting-card').forEach(card => {
-    const id = card.dataset.id;
-    const m = data.meetings.find(x => x.id === id);
-    card.querySelector('.meeting-date-input').onchange = e => { m.date = e.target.value; persistShowData(state.activeShowId); renderMain(); };
-    card.querySelector('.meeting-attendees-input').onchange = e => { m.attendees = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.meeting-notes-input').onchange = e => { m.notes = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.meeting-actions-input').onchange = e => { m.actionItems = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.meeting-del').onclick = () => {
-      data.meetings = data.meetings.filter(x => x.id !== id);
-      persistShowData(state.activeShowId);
-      renderMain();
-    };
-  });
-}
 function todayStr(){
   const d = new Date();
   return d.toISOString().slice(0,10);
@@ -1229,100 +946,6 @@ function wireCastEvents(){
     };
   });
 }
-function cueIsFlagged(c){
-  return /copyright|permission|ask director/i.test(c.notes || '');
-}
-
-function cuesTemplate(){
-  const data = currentData();
-  const flaggedCount = data.cues.filter(cueIsFlagged).length;
-
-  const decisions = data.cues.filter(c => /ask director/i.test(c.notes || ''));
-  const decisionRows = decisions.map(c => `
-    <div class="todo-row decision">
-      <span class="flag-dot"></span>
-      <div>
-        <div class="todo-label">${escapeHtml(c.num)} \u2014 ${escapeHtml(c.label)}</div>
-        <div class="sched-note">${escapeHtml(c.notes)}</div>
-      </div>
-      <div></div>
-    </div>
-  `).join('');
-  const decisionsPanel = decisions.length ? `
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Open decisions</h3>
-        <span class="hint">${decisions.length} awaiting director input</span>
-      </div>
-      <div>${decisionRows}</div>
-    </div>` : '';
-
-  const rows = data.cues.map(c => `
-    <tr data-id="${c.id}" class="${cueIsFlagged(c) ? 'flag-row' : ''}">
-      <td><input type="text" class="field cue-num" value="${escapeHtml(c.num)}" style="width:52px" placeholder="Q1"></td>
-      <td style="width:78px"><input type="text" class="field cue-scene" value="${escapeHtml(c.sceneAct)}" placeholder="I.iii"></td>
-      <td><textarea class="field cue-label" rows="2" placeholder="Description">${escapeHtml(c.label)}</textarea></td>
-      <td><textarea class="field cue-trigger" rows="2" placeholder="Trigger / QLab note">${escapeHtml(c.trigger)}</textarea></td>
-      <td>${cueIsFlagged(c) ? '<span class="flag-dot" title="Needs rights clearance or director input"></span>' : ''}<textarea class="field cue-notes" rows="2" placeholder="Notes, candidate files, flags">${escapeHtml(c.notes)}</textarea></td>
-      <td style="width:118px">
-        <select class="field cue-status">
-          ${['Draft','Programmed','Confirmed'].map(s => `<option ${c.status===s?'selected':''}>${s}</option>`).join('')}
-        </select>
-      </td>
-      <td><button class="btn btn-ghost btn-sm cue-del" title="Delete cue">\u2715</button></td>
-    </tr>
-  `).join('');
-
-  return `
-    ${decisionsPanel}
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Cue list</h3>
-        <button class="btn btn-gold btn-sm" id="addCueBtn">+ Add cue</button>
-      </div>
-      ${flaggedCount > 0 ? `<div class="panel-head" style="margin-top:-4px;"><span class="hint"><span class="flag-dot"></span>${flaggedCount} cue${flaggedCount===1?'':'s'} need rights clearance or a director decision</span></div>` : ''}
-      ${data.cues.length === 0 ? `<div class="empty"><span class="big">No cues yet</span>Add your first cue to start building the list.</div>` : `
-      <div class="table-scroll">
-      <table>
-        <thead><tr><th>Cue</th><th>Scene</th><th>Description</th><th>Trigger</th><th>Notes</th><th>Status</th><th></th></tr></thead>
-        <tbody id="cueRows">${rows}</tbody>
-      </table>
-      </div>`}
-    </div>
-  `;
-}
-
-function wireCueEvents(){
-  const data = currentData();
-  document.getElementById('addCueBtn').onclick = () => {
-    data.cues.push({ id: uid(), num: `Q${data.cues.length+1}`, label:'', sceneAct:'', trigger:'', notes:'', status:'Draft' });
-    persistShowData(state.activeShowId);
-    renderMain();
-  };
-  document.querySelectorAll('#cueRows textarea.field').forEach(autoGrow);
-  document.querySelectorAll('#cueRows tr').forEach(row => {
-    const id = row.dataset.id;
-    const cue = data.cues.find(c => c.id === id);
-    row.querySelector('.cue-num').onchange = e => { cue.num = e.target.value; persistShowData(state.activeShowId); };
-    const labelEl = row.querySelector('.cue-label');
-    labelEl.oninput = () => autoGrow(labelEl);
-    labelEl.onchange = e => { cue.label = e.target.value; persistShowData(state.activeShowId); };
-    row.querySelector('.cue-scene').onchange = e => { cue.sceneAct = e.target.value; persistShowData(state.activeShowId); };
-    const triggerEl = row.querySelector('.cue-trigger');
-    triggerEl.oninput = () => autoGrow(triggerEl);
-    triggerEl.onchange = e => { cue.trigger = e.target.value; persistShowData(state.activeShowId); };
-    const notesEl = row.querySelector('.cue-notes');
-    notesEl.oninput = () => autoGrow(notesEl);
-    notesEl.onchange = e => { cue.notes = e.target.value; persistShowData(state.activeShowId); renderMain(); };
-    row.querySelector('.cue-status').onchange = e => { cue.status = e.target.value; persistShowData(state.activeShowId); };
-    row.querySelector('.cue-del').onclick = () => {
-      data.cues = data.cues.filter(c => c.id !== id);
-      persistShowData(state.activeShowId);
-      renderMain();
-    };
-  });
-}
-
 // ---------------- SCHEDULE ----------------
 function scheduleTemplate(){
   const data = currentData();
@@ -1335,7 +958,7 @@ function scheduleTemplate(){
       </div>
       <div class="sched-fields">
         <input type="text" class="field sched-label-input" value="${escapeHtml(item.label)}" placeholder="Milestone">
-        <input type="text" class="field sched-note-input" value="${escapeHtml(item.note)}" placeholder="Notes (optional)">
+        <textarea class="field sched-note-input" rows="1" placeholder="Notes, meeting discussion, action items (optional)">${escapeHtml(item.note)}</textarea>
       </div>
       <div style="display:flex; gap:8px; align-items:center; padding-top:6px;">
         <input type="checkbox" class="check sched-done" ${item.done ? 'checked' : ''} title="Mark done">
@@ -1367,60 +990,13 @@ function wireScheduleEvents(){
     const item = data.schedule.find(s => s.id === id);
     row.querySelector('.sched-date-input').onchange = e => { item.date = e.target.value; persistShowData(state.activeShowId); renderMain(); };
     row.querySelector('.sched-label-input').onchange = e => { item.label = e.target.value; persistShowData(state.activeShowId); };
-    row.querySelector('.sched-note-input').onchange = e => { item.note = e.target.value; persistShowData(state.activeShowId); };
+    const noteEl = row.querySelector('.sched-note-input');
+    autoGrow(noteEl);
+    noteEl.oninput = () => autoGrow(noteEl);
+    noteEl.onchange = e => { item.note = e.target.value; persistShowData(state.activeShowId); };
     row.querySelector('.sched-done').onchange = e => { item.done = e.target.checked; persistShowData(state.activeShowId); renderMain(); };
     row.querySelector('.sched-del').onclick = () => {
       data.schedule = data.schedule.filter(s => s.id !== id);
-      persistShowData(state.activeShowId);
-      renderMain();
-    };
-  });
-}
-
-// ---------------- FILES ----------------
-function filesTemplate(){
-  const data = currentData();
-  const rows = data.files.map(f => `
-    <div class="contact-card" data-id="${f.id}">
-      <button class="btn btn-ghost btn-sm file-del" title="Remove">\u2715</button>
-      <input type="text" class="file-name-input" value="${escapeHtml(f.name)}" placeholder="File name / label" style="font-weight:600;">
-      <input type="text" class="file-type-input" value="${escapeHtml(f.type)}" placeholder="Type (SFX / MUS / AMB)">
-      <input type="text" class="file-cue-input" value="${escapeHtml(f.cueRef)}" placeholder="Cue #(s) e.g. S-1, S-2">
-      <input type="text" class="file-url-input" value="${escapeHtml(f.url)}" placeholder="Link or file path">
-      <input type="text" class="file-notes-input" value="${escapeHtml(f.notes)}" placeholder="Notes">
-    </div>
-  `).join('');
-
-  return `
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Sound files</h3>
-        <button class="btn btn-gold btn-sm" id="addFileBtn">+ Add file / link</button>
-      </div>
-      <div class="hint" style="margin:-4px 0 12px;">Drop links to shared drives, Dropbox, or file names from your library \u2014 not an upload, just a reference list tied back to cues.</div>
-      ${data.files.length === 0 ? `<div class="empty"><span class="big">No files logged</span>Add candidate SFX, music, or ambience files and link them to cue numbers.</div>` : `<div class="contact-grid">${rows}</div>`}
-    </div>
-  `;
-}
-
-function wireFileEvents(){
-  const data = currentData();
-  document.getElementById('addFileBtn').onclick = () => {
-    data.files.push({ id: uid(), name:'', type:'', cueRef:'', url:'', notes:'' });
-    persistShowData(state.activeShowId);
-    renderMain();
-  };
-  document.querySelectorAll('#tabContent .contact-card').forEach(card => {
-    const id = card.dataset.id;
-    const f = data.files.find(x => x.id === id);
-    if(!f) return;
-    card.querySelector('.file-name-input').onchange = e => { f.name = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.file-type-input').onchange = e => { f.type = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.file-cue-input').onchange = e => { f.cueRef = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.file-url-input').onchange = e => { f.url = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.file-notes-input').onchange = e => { f.notes = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.file-del').onclick = () => {
-      data.files = data.files.filter(x => x.id !== id);
       persistShowData(state.activeShowId);
       renderMain();
     };
@@ -1469,50 +1045,6 @@ function wireContactEvents(){
     card.querySelector('.contact-notes-input').onchange = e => { c.notes = e.target.value; persistShowData(state.activeShowId); };
     card.querySelector('.contact-del').onclick = () => {
       data.contacts = data.contacts.filter(x => x.id !== id);
-      persistShowData(state.activeShowId);
-      renderMain();
-    };
-  });
-}
-
-// ---------------- NOTES ----------------
-function notesTemplate(){
-  const data = currentData();
-  const cards = data.notes.map(n => `
-    <div class="note-card" data-id="${n.id}">
-      <div class="row-top">
-        <input type="text" class="note-scene note-scene-input" value="${escapeHtml(n.scene)}" placeholder="Scene / Act">
-        <button class="btn btn-ghost btn-sm note-del">\u2715</button>
-      </div>
-      <textarea class="note-text-input" placeholder="Notes...">${escapeHtml(n.text)}</textarea>
-    </div>
-  `).join('');
-
-  return `
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Scene &amp; script notes</h3>
-        <button class="btn btn-gold btn-sm" id="addNoteBtn">+ Add note</button>
-      </div>
-      ${data.notes.length === 0 ? `<div class="empty"><span class="big">No notes yet</span>Track sound-relevant beats, script references, or design ideas by scene.</div>` : cards}
-    </div>
-  `;
-}
-
-function wireNoteEvents(){
-  const data = currentData();
-  document.getElementById('addNoteBtn').onclick = () => {
-    data.notes.push({ id: uid(), scene:'', text:'' });
-    persistShowData(state.activeShowId);
-    renderMain();
-  };
-  document.querySelectorAll('.note-card').forEach(card => {
-    const id = card.dataset.id;
-    const n = data.notes.find(x => x.id === id);
-    card.querySelector('.note-scene-input').onchange = e => { n.scene = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.note-text-input').onchange = e => { n.text = e.target.value; persistShowData(state.activeShowId); };
-    card.querySelector('.note-del').onclick = () => {
-      data.notes = data.notes.filter(x => x.id !== id);
       persistShowData(state.activeShowId);
       renderMain();
     };
@@ -1588,12 +1120,8 @@ function bestPracticesTemplate(){
 function wireTabEvents(){
   if(state.activeTab === 'cast') wireCastEvents();
   if(state.activeTab === 'script') wireScriptEvents();
-  if(state.activeTab === 'cues') wireCueEvents();
   if(state.activeTab === 'schedule') wireScheduleEvents();
-  if(state.activeTab === 'files') wireFileEvents();
-  if(state.activeTab === 'meetings') wireMeetingEvents();
   if(state.activeTab === 'contacts') wireContactEvents();
-  if(state.activeTab === 'notes') wireNoteEvents();
 }
 
 // ---------------- Show modals ----------------
@@ -1606,7 +1134,7 @@ function openNewShowModal(){
       state.shows.push({ id, ...vals });
       state.data[id] = blankShowData();
       state.activeShowId = id;
-      state.activeTab = 'cues';
+      state.activeTab = 'schedule';
       persistShows();
       persistShowData(id);
       render();
