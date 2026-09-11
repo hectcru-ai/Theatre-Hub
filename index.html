@@ -730,6 +730,19 @@ async function loadAll(){
     motoeData.aug28NotesInSchedule = true;
     persistShowData('motoe');
   }
+  // One-time migration: load the top director questions as the agenda for
+  // the 9/11 production meeting.
+  if(motoeData && !motoeData.sep11AgendaAdded){
+    const row = motoeData.schedule.find(s => s.date === '2026-09-11' && s.label === 'Production meeting');
+    const agenda = 'TOP DIRECTOR QUESTIONS FOR THIS MEETING: (1) S-36 8-stabs finale build approach. (2) S-23/S-26 discovery-scream vs. blackout-screech \u2014 same signature or distinct? (3) S-1A prologue \u2014 Mother/Father voices: cut, ADR, or live off-stage? (4) S-4 Middle Eastern underscore \u2014 authentic vs. stylized, licensing budget? (5) 5 proposed train-door SFX cues \u2014 confirm wanted + placement. Fact-check only: S-10 Mahler movement (2nd vs 4th); S-28/S-38 Bach Suite No. 2 vs No. 5. Full detail in the Excel Director Decisions tab.';
+    if(row){
+      row.note = row.note && row.note !== '10:00\u201311:00 AM' ? row.note + ' | ' + agenda : agenda;
+    } else {
+      motoeData.schedule.push({ id: uid(), date: '2026-09-11', label: 'Production meeting', note: agenda, done: false });
+    }
+    motoeData.sep11AgendaAdded = true;
+    persistShowData('motoe');
+  }
   render();
 }
 
